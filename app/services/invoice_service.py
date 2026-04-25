@@ -16,18 +16,17 @@ class InvoiceService:
         c = canvas.Canvas(buffer, pagesize=A4)
         c.setTitle(f"Invoice_{data.invoice_number}")
 
-        # フォント登録 (真の TrueType を使用)
+        # フォント登録 (ビジネス用シャープなフォント: BIZ UDPGothic)
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
-        regular_font_path = os.path.join(font_dir, "JPFont-Regular.ttf")
-        bold_font_path = os.path.join(font_dir, "JPFont-Bold.ttf")
+        regular_font_path = os.path.join(font_dir, "Business-Regular.ttf")
+        bold_font_path = os.path.join(font_dir, "Business-Bold.ttf")
 
         # pdfmetrics.registerFont で TTFont を登録
-        # TrueType アウトラインのため、Chrome/ReportLab ともに完璧に動作します。
-        pdfmetrics.registerFont(TTFont('JPFont', regular_font_path))
-        pdfmetrics.registerFont(TTFont('JPFont-Bold', bold_font_path))
+        pdfmetrics.registerFont(TTFont('BusinessFont', regular_font_path))
+        pdfmetrics.registerFont(TTFont('BusinessFont-Bold', bold_font_path))
         
-        font_name = 'JPFont'
-        bold_font_name = 'JPFont-Bold'
+        font_name = 'BusinessFont'
+        bold_font_name = 'BusinessFont-Bold'
 
         width, height = A4
 
@@ -52,8 +51,8 @@ class InvoiceService:
         c.line(20*mm, height - 67*mm, 100*mm, height - 67*mm)
 
         # 合計金額バー
-        c.setFillColor(colors.HexColor("#F8FAFC")) # slate-50
-        c.setStrokeColor(colors.HexColor("#E2E8F0")) # slate-200
+        c.setFillColor(colors.HexColor("#F8FAFC"))
+        c.setStrokeColor(colors.HexColor("#E2E8F0"))
         c.rect(20*mm, height - 88*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
         c.setFillColor(colors.black)
         c.setFont(bold_font_name, 14)
