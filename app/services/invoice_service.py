@@ -31,7 +31,7 @@ class InvoiceService:
 
         # --- タイトル ---
         c.setFont(bold_font_name, 24)
-        c.drawCentredString(width/2, height - 25*mm, "御請求書")
+        c.drawCentredString(width/2, height - 25*mm, "請求書")
         c.setLineWidth(0.8)
         c.setStrokeColor(colors.black)
         c.line(width/2 - 20*mm, height - 28*mm, width/2 + 20*mm, height - 28*mm)
