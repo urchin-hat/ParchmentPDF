@@ -61,6 +61,19 @@
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="payment_deadline" class="block text-xs font-semibold text-slate-500 uppercase mb-1">支払期限</label>
+                                <input type="date" name="payment_deadline" id="payment_deadline"
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                            <div>
+                                <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
+                                <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                        </div>
+
                         <div class="space-y-4 pt-2">
                             <div>
                                 <label for="issuer_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名 (From)</label>
@@ -68,14 +81,28 @@
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                             <div>
+                                <label for="issuer_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者 住所・連絡先</label>
+                                <textarea name="issuer_address" id="issuer_address" placeholder="例: 〒100-0001 東京都千代田区1-1-1&#13;&#10;TEL: 03-xxxx-xxxx"
+                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all" rows="2"></textarea>
+                            </div>
+                            <div>
                                 <label for="seal_text" class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>
                                 <input type="text" name="seal_text" id="seal_text" placeholder="例: 代表之印"
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
+                        </div>
+
+                        <div class="space-y-4 pt-2">
+                            <h2 class="text-sm font-bold text-slate-500 border-b border-slate-100 pb-1">振込先・備考</h2>
                             <div>
-                                <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
-                                <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
-                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                <label for="bank_info" class="block text-xs font-semibold text-slate-500 uppercase mb-1">振込先口座情報</label>
+                                <textarea name="bank_info" id="bank_info" placeholder="例: 波々銀行 大波支店 普通 1234567&#13;&#10;口座名義: ナミセイキュウ（カ"
+                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono text-sm" rows="2"></textarea>
+                            </div>
+                            <div>
+                                <label for="notes" class="block text-xs font-semibold text-slate-500 uppercase mb-1">備考 / 特記事項</label>
+                                <textarea name="notes" id="notes" placeholder="例: 振込手数料は貴社にてご負担願います。"
+                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm" rows="2"></textarea>
                             </div>
                         </div>
                     </div>

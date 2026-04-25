@@ -16,12 +16,11 @@ class InvoiceService:
         c = canvas.Canvas(buffer, pagesize=A4)
         c.setTitle(f"Invoice_{data.invoice_number}")
 
-        # フォント登録 (ビジネス用シャープなフォント: BIZ UDPGothic)
+        # フォント登録
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
         regular_font_path = os.path.join(font_dir, "Business-Regular.ttf")
         bold_font_path = os.path.join(font_dir, "Business-Bold.ttf")
 
-        # pdfmetrics.registerFont で TTFont を登録
         pdfmetrics.registerFont(TTFont('BusinessFont', regular_font_path))
         pdfmetrics.registerFont(TTFont('BusinessFont-Bold', bold_font_path))
         
@@ -30,40 +29,53 @@ class InvoiceService:
 
         width, height = A4
 
-        # --- 描画開始 ---
-        # タイトル
+        # --- タイトル ---
         c.setFont(bold_font_name, 24)
-        c.drawCentredString(width/2, height - 30*mm, "御請求書")
-        
-        c.setLineWidth(1)
+        c.drawCentredString(width/2, height - 25*mm, "御請求書")
+        c.setLineWidth(0.8)
         c.setStrokeColor(colors.black)
-        c.line(width/2 - 20*mm, height - 33*mm, width/2 + 20*mm, height - 33*mm)
+        c.line(width/2 - 20*mm, height - 28*mm, width/2 + 20*mm, height - 28*mm)
 
-        # メタデータ (右寄せ)
+        # --- メタデータ (右寄せ) ---
         c.setFont(font_name, 10)
-        c.drawRightString(width - 20*mm, height - 45*mm, f"請求書番号: {data.invoice_number}")
-        c.drawRightString(width - 20*mm, height - 51*mm, f"発行日: {data.issue_date}")
+        c.drawRightString(width - 20*mm, height - 40*mm, f"請求書番号: {data.invoice_number}")
+        c.drawRightString(width - 20*mm, height - 45*mm, f"発行日: {data.issue_date}")
+        if data.payment_deadline:
+            c.setFillColor(colors.red)
+            c.setFont(bold_font_name, 10)
+            c.drawRightString(width - 20*mm, height - 50*mm, f"支払期限: {data.payment_deadline}")
+            c.setFillColor(colors.black)
 
-        # 宛先 (左寄せ)
+        # --- 宛先 (左寄せ) ---
         c.setFont(bold_font_name, 16)
-        c.drawString(20*mm, height - 65*mm, f"{data.client_name} 御中")
+        c.drawString(20*mm, height - 60*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
-        c.line(20*mm, height - 67*mm, 100*mm, height - 67*mm)
+        c.line(20*mm, height - 62*mm, 100*mm, height - 62*mm)
 
-        # 合計金額バー
+        # --- 合計金額バー ---
         c.setFillColor(colors.HexColor("#F8FAFC"))
         c.setStrokeColor(colors.HexColor("#E2E8F0"))
-        c.rect(20*mm, height - 88*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
+        c.rect(20*mm, height - 83*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
         c.setFillColor(colors.black)
         c.setFont(bold_font_name, 14)
-        c.drawString(28*mm, height - 80*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
+        c.drawString(28*mm, height - 75*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
         
-        # 発行者情報 (右寄せ)
-        issuer_y = height - 105*mm
+        # --- 発行者情報 (右寄せ・複数行) ---
+        issuer_y = height - 100*mm
         c.setFont(bold_font_name, 11)
-        c.drawString(130*mm, issuer_y, "発行者:")
-        c.setFont(font_name, 11)
-        c.drawString(130*mm, issuer_y - 7*mm, data.issuer_name)
+        c.drawRightString(width - 30*mm, issuer_y, "発行者:")
+        c.setFont(bold_font_name, 12)
+        c.drawRightString(width - 30*mm, issuer_y - 7*mm, data.issuer_name)
+        
+        # 住所の描画
+        if data.issuer_address:
+            c.setFont(font_name, 9)
+            c.setFillColor(colors.HexColor("#475569")) # slate-600
+            addr_y = issuer_y - 12*mm
+            for line in data.issuer_address.splitlines():
+                c.drawRightString(width - 30*mm, addr_y, line)
+                addr_y -= 4*mm
+            c.setFillColor(colors.black)
 
         # 印影
         seal_text = data.seal_text or data.issuer_name[:4]
@@ -72,11 +84,11 @@ class InvoiceService:
                 seal_bytes = generate_seal_image(seal_text)
                 from reportlab.lib.utils import ImageReader
                 seal_img = ImageReader(io.BytesIO(seal_bytes))
-                c.drawImage(seal_img, 165*mm, issuer_y - 15*mm, width=22*mm, height=22*mm, mask='auto')
+                c.drawImage(seal_img, width - 35*mm, issuer_y - 12*mm, width=22*mm, height=22*mm, mask='auto')
             except Exception as e:
                 print(f"Error generating seal: {e}")
 
-        # 表ヘッダー
+        # --- 表ヘッダー ---
         table_top = height - 135*mm
         c.setFillColor(colors.HexColor("#F8FAFC"))
         c.setStrokeColor(colors.black)
@@ -93,7 +105,7 @@ class InvoiceService:
         c.drawRightString(155*mm, table_top - 7*mm, "単価")
         c.drawRightString(width - 25*mm, table_top - 7*mm, "金額 (税抜)")
 
-        # 表データ
+        # --- 表データ ---
         y = table_top - 10*mm
         c.setFont(font_name, 9)
         for item in data.items:
@@ -107,34 +119,63 @@ class InvoiceService:
             c.setLineWidth(0.3)
             c.line(20*mm, y, width - 20*mm, y)
 
-        # 集計セクション
-        y -= 15*mm
+        # --- 振込先・備考・集計 (最下段) ---
+        bottom_y = y - 10*mm
+        
+        # 振込先・備考
+        info_y = bottom_y
+        if data.bank_info:
+            c.setFont(bold_font_name, 8)
+            c.setFillColor(colors.HexColor("#94A3B8")) # slate-400
+            c.drawString(25*mm, info_y, "【お振込先】")
+            c.setFillColor(colors.black)
+            c.setFont(font_name, 9)
+            info_y -= 5*mm
+            for line in data.bank_info.splitlines():
+                c.drawString(25*mm, info_y, line)
+                info_y -= 4.5*mm
+        
+        if data.notes:
+            info_y -= 5*mm
+            c.setFont(bold_font_name, 8)
+            c.setFillColor(colors.HexColor("#94A3B8"))
+            c.drawString(25*mm, info_y, "【備考】")
+            c.setFillColor(colors.black)
+            c.setFont(font_name, 8)
+            info_y -= 4.5*mm
+            for line in data.notes.splitlines():
+                c.drawString(25*mm, info_y, line)
+                info_y -= 4*mm
+
+        # 集計セクション (右寄せカード)
+        summary_w = 70
+        summary_h = 25 + (len(data.tax_breakdown) * 8)
         c.setFillColor(colors.HexColor("#F8FAFC"))
-        c.rect(width - 95*mm, y - 30*mm, 75*mm, 40*mm, fill=1, stroke=0)
+        c.rect(width - 90*mm, bottom_y - summary_h + 10*mm, 70*mm, summary_h, fill=1, stroke=0)
         c.setFillColor(colors.black)
         
-        current_y = y + 2*mm
+        curr_summary_y = bottom_y + 4*mm
         c.setFont(font_name, 9)
-        c.drawRightString(width - 60*mm, current_y, "小計 (税抜)")
-        c.drawRightString(width - 25*mm, current_y, f"¥{data.subtotal:,}")
+        c.drawRightString(width - 55*mm, curr_summary_y, "小計 (税抜)")
+        c.drawRightString(width - 25*mm, curr_summary_y, f"¥{data.subtotal:,}")
         
         for rate, amount in data.tax_breakdown.items():
-            current_y -= 8*mm
-            c.drawRightString(width - 60*mm, current_y, f"消費税 ({rate})")
-            c.drawRightString(width - 25*mm, current_y, f"¥{amount:,}")
+            curr_summary_y -= 8*mm
+            c.drawRightString(width - 55*mm, curr_summary_y, f"消費税 ({rate})")
+            c.drawRightString(width - 25*mm, curr_summary_y, f"¥{amount:,}")
             
-        current_y -= 10*mm
+        curr_summary_y -= 10*mm
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.5)
-        c.line(width - 90*mm, current_y + 8*mm, width - 25*mm, current_y + 8*mm)
+        c.line(width - 85*mm, curr_summary_y + 8*mm, width - 25*mm, curr_summary_y + 8*mm)
         c.setFont(bold_font_name, 11)
-        c.drawRightString(width - 60*mm, current_y, "税込合計金額")
-        c.drawRightString(width - 25*mm, current_y, f"¥{data.grand_total:,}")
+        c.drawRightString(width - 55*mm, curr_summary_y, "税込合計金額")
+        c.drawRightString(width - 25*mm, curr_summary_y, f"¥{data.grand_total:,}")
 
-        # フッター
+        # --- フッター ---
         c.setFont(font_name, 8)
         c.setFillColor(colors.gray)
-        c.drawCentredString(width/2, 20*mm, "本請求書は Nami-Seikyu により自動生成されました。")
+        c.drawCentredString(width/2, 15*mm, "本請求書は Nami-Seikyu により自動生成されました。")
 
         c.showPage()
         c.save()

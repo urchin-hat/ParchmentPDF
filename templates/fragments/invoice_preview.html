@@ -8,26 +8,32 @@
         <div class="text-right space-y-1">
             <p class="text-xs text-slate-400 font-mono">請求書番号: <span class="text-slate-700">{{ invoice.invoice_number }}</span></p>
             <p class="text-xs text-slate-400 font-mono">発行日: <span class="text-slate-700">{{ invoice.issue_date }}</span></p>
+            {% if invoice.payment_deadline %}
+            <p class="text-xs text-red-400 font-mono">支払期限: <span class="text-red-600 font-bold border-b border-red-200">{{ invoice.payment_deadline }}</span></p>
+            {% endif %}
         </div>
     </div>
 
-    <div class="mb-10">
+    <div class="mb-8">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
         <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 inline-block min-w-[250px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
     </div>
 
-    <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-10 flex justify-between items-center">
+    <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-8 flex justify-between items-center">
         <span class="text-lg font-bold text-slate-700">合計金額 (税込)</span>
         <span class="text-2xl font-black text-slate-900">¥{{ invoice.grand_total | font_format_currency }}</span>
     </div>
 
-    <div class="flex justify-end mb-10 relative">
-        <div class="text-right">
+    <div class="flex justify-end mb-8 relative">
+        <div class="text-right max-w-[300px]">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 text-left">発行者</p>
             <p class="text-lg font-bold text-slate-800">{{ invoice.issuer_name or '　　　　　' }}</p>
+            {% if invoice.issuer_address %}
+            <p class="text-xs text-slate-500 mt-1 whitespace-pre-wrap">{{ invoice.issuer_address }}</p>
+            {% endif %}
         </div>
         {% if invoice.seal_text %}
-        <div class="absolute -right-2 -top-4 opacity-90 pointer-events-none" id="preview-seal">
+        <div class="absolute -right-2 top-0 opacity-90 pointer-events-none" id="preview-seal">
             <div class="w-14 h-14 border-2 border-red-500 rounded-sm flex items-center justify-center text-red-500 font-bold text-[10px] p-1 transform rotate-12 leading-tight ring-1 ring-red-500 ring-offset-1">
                 {{ invoice.seal_text }}
             </div>
@@ -35,7 +41,7 @@
         {% endif %}
     </div>
 
-    <table class="w-full mb-8 border-collapse">
+    <table class="w-full mb-6 border-collapse">
         <thead>
             <tr class="bg-slate-50 border-t-2 border-b border-slate-800">
                 <th class="p-3 text-left text-xs font-bold text-slate-600 uppercase">内容 / 品目</th>
@@ -62,8 +68,26 @@
         </tbody>
     </table>
 
-    <div class="flex justify-end pt-4">
-        <div class="w-72 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+    <div class="flex justify-between items-start pt-4">
+        <!-- 振込先情報 -->
+        <div class="w-1/2">
+            {% if invoice.bank_info %}
+            <div class="p-4 border border-slate-100 bg-slate-50/50 rounded-xl">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">お振込先</p>
+                <p class="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-relaxed">{{ invoice.bank_info }}</p>
+            </div>
+            {% endif %}
+            
+            {% if invoice.notes %}
+            <div class="mt-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">備考</p>
+                <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 金額内訳 -->
+        <div class="w-64 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
             <div class="flex justify-between text-xs font-medium">
                 <span class="text-slate-400">小計 (税抜)</span>
                 <span class="text-slate-700 font-mono">¥{{ invoice.subtotal | font_format_currency }}</span>
