@@ -101,7 +101,7 @@
                     </div>
 
                     <div class="mt-8 flex gap-4">
-                        <button type="submit" form="invoice-form" formaction="/generate"
+                        <button type="button" onclick="if(document.getElementById('invoice-form').reportValidity()) { document.getElementById('invoice-form').submit(); }"
                                 class="flex-1 bg-slate-800 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-slate-700 transition-all shadow-lg flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
