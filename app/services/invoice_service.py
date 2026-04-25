@@ -46,11 +46,21 @@ class InvoiceService:
             c.drawRightString(width - 20*mm, height - 50*mm, f"支払期限: {data.payment_deadline}")
             c.setFillColor(colors.black)
 
-        # --- 宛先 ---
+        # --- 宛先 (左寄せ) ---
+        c.setFont(font_name, 9)
+        c.setFillColor(colors.HexColor("#475569")) # slate-600
+        client_y = height - 55*mm
+        if data.client_address:
+            for line in data.client_address.splitlines():
+                c.drawString(20*mm, client_y, line)
+                client_y -= 4*mm
+
+        c.setFillColor(colors.black)
         c.setFont(bold_font_name, 16)
-        c.drawString(20*mm, height - 60*mm, f"{data.client_name} 御中")
+        c.drawString(20*mm, client_y - 2*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
-        c.line(20*mm, height - 62*mm, 100*mm, height - 62*mm)
+        c.line(20*mm, client_y - 4*mm, 100*mm, client_y - 4*mm)
+
 
         # --- 合計金額バー ---
         c.setFillColor(colors.HexColor("#F8FAFC"))

@@ -30,6 +30,7 @@ def parse_invoice_form(
     issue_date: date,
     payment_deadline: Optional[date],
     client_name: str,
+    client_address: Optional[str],
     issuer_name: str,
     issuer_address: Optional[str],
     bank_info: Optional[str],
@@ -51,6 +52,7 @@ def parse_invoice_form(
         issue_date=issue_date,
         payment_deadline=payment_deadline,
         client_name=client_name,
+        client_address=client_address,
         issuer_name=issuer_name,
         issuer_address=issuer_address,
         bank_info=bank_info,
@@ -81,6 +83,7 @@ async def preview_invoice(
     issue_date: date = Form(...),
     payment_deadline: date = Form(None),
     client_name: str = Form(...),
+    client_address: str = Form(None),
     issuer_name: str = Form(...),
     issuer_address: str = Form(None),
     bank_info: str = Form(None),
@@ -92,8 +95,8 @@ async def preview_invoice(
     item_tax: List[int] = Form(...)
 ):
     invoice_data = parse_invoice_form(
-        invoice_number, issue_date, payment_deadline, client_name, issuer_name, 
-        issuer_address, bank_info, notes, seal_text, 
+        invoice_number, issue_date, payment_deadline, client_name, client_address, 
+        issuer_name, issuer_address, bank_info, notes, seal_text, 
         item_desc, item_qty, item_price, item_tax
     )
     
@@ -112,6 +115,7 @@ async def generate_invoice(
     issue_date: date = Form(...),
     payment_deadline: date = Form(None),
     client_name: str = Form(...),
+    client_address: str = Form(None),
     issuer_name: str = Form(...),
     issuer_address: str = Form(None),
     bank_info: str = Form(None),
@@ -123,8 +127,8 @@ async def generate_invoice(
     item_tax: List[int] = Form(...)
 ):
     invoice_data = parse_invoice_form(
-        invoice_number, issue_date, payment_deadline, client_name, issuer_name, 
-        issuer_address, bank_info, notes, seal_text, 
+        invoice_number, issue_date, payment_deadline, client_name, client_address, 
+        issuer_name, issuer_address, bank_info, notes, seal_text, 
         item_desc, item_qty, item_price, item_tax
     )
     

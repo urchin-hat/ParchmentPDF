@@ -16,6 +16,9 @@
 
     <div class="mb-8">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
+        {% if invoice.client_address %}
+        <p class="text-xs text-slate-500 mb-1 whitespace-pre-wrap">{{ invoice.client_address }}</p>
+        {% endif %}
         <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 inline-block min-w-[250px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
     </div>
 

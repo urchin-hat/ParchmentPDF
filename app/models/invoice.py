@@ -28,6 +28,7 @@ class InvoiceRequest(BaseModel):
     issue_date: date = Field(default_factory=date.today, description="発行日")
     payment_deadline: Optional[date] = Field(None, description="支払期限")
     client_name: str = Field(..., description="請求先名")
+    client_address: Optional[str] = Field(None, description="請求先住所")
     issuer_name: str = Field(..., description="発行者名")
     issuer_address: Optional[str] = Field(None, description="発行者住所・連絡先")
     bank_info: Optional[str] = Field(None, description="振込先情報")
