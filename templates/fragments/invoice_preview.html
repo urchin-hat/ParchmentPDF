@@ -69,8 +69,8 @@
     </table>
 
     <div class="flex justify-between items-start pt-4">
-        <!-- 振込先情報 -->
-        <div class="w-1/2">
+        <!-- 振込先情報・備考 -->
+        <div class="w-1/2 space-y-4">
             {% if invoice.bank_info %}
             <div class="p-4 border border-slate-100 bg-slate-50/50 rounded-xl">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">お振込先</p>
@@ -79,8 +79,8 @@
             {% endif %}
             
             {% if invoice.notes %}
-            <div class="mt-4">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">備考</p>
+            <div class="p-4 border border-slate-50 bg-white rounded-xl">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">備考 / 特記事項</p>
                 <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
             </div>
             {% endif %}
@@ -92,13 +92,22 @@
                 <span class="text-slate-400">小計 (税抜)</span>
                 <span class="text-slate-700 font-mono">¥{{ invoice.subtotal | font_format_currency }}</span>
             </div>
-            {% for rate, amount in invoice.tax_breakdown.items() %}
             <div class="flex justify-between text-xs font-medium">
-                <span class="text-slate-400">消費税 ({{ rate }})</span>
-                <span class="text-slate-700 font-mono">¥{{ amount | font_format_currency }}</span>
+                <span class="text-slate-400">消費税 合計</span>
+                <span class="text-slate-700 font-mono">¥{{ invoice.total_tax | font_format_currency }}</span>
             </div>
-            {% endfor %}
-            <div class="flex justify-between text-base font-black border-t border-slate-200 pt-2 text-slate-900">
+            
+            <!-- 税率別内訳 -->
+            <div class="pt-1 space-y-1 border-t border-slate-200">
+                {% for rate, amount in invoice.tax_breakdown.items() %}
+                <div class="flex justify-between text-[10px] text-slate-400">
+                    <span>内訳 ({{ rate }})</span>
+                    <span>¥{{ amount | font_format_currency }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-between text-base font-black border-t border-slate-300 pt-2 text-slate-900">
                 <span>税込合計金額</span>
                 <span>¥{{ invoice.grand_total | font_format_currency }}</span>
             </div>

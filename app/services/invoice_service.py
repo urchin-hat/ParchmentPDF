@@ -36,7 +36,7 @@ class InvoiceService:
         c.setStrokeColor(colors.black)
         c.line(width/2 - 20*mm, height - 28*mm, width/2 + 20*mm, height - 28*mm)
 
-        # --- メタデータ (右寄せ) ---
+        # --- メタデータ ---
         c.setFont(font_name, 10)
         c.drawRightString(width - 20*mm, height - 40*mm, f"請求書番号: {data.invoice_number}")
         c.drawRightString(width - 20*mm, height - 45*mm, f"発行日: {data.issue_date}")
@@ -46,7 +46,7 @@ class InvoiceService:
             c.drawRightString(width - 20*mm, height - 50*mm, f"支払期限: {data.payment_deadline}")
             c.setFillColor(colors.black)
 
-        # --- 宛先 (左寄せ) ---
+        # --- 宛先 ---
         c.setFont(bold_font_name, 16)
         c.drawString(20*mm, height - 60*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
@@ -60,17 +60,16 @@ class InvoiceService:
         c.setFont(bold_font_name, 14)
         c.drawString(28*mm, height - 75*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
         
-        # --- 発行者情報 (右寄せ・複数行) ---
+        # --- 発行者情報 ---
         issuer_y = height - 100*mm
         c.setFont(bold_font_name, 11)
         c.drawRightString(width - 30*mm, issuer_y, "発行者:")
         c.setFont(bold_font_name, 12)
         c.drawRightString(width - 30*mm, issuer_y - 7*mm, data.issuer_name)
         
-        # 住所の描画
         if data.issuer_address:
             c.setFont(font_name, 9)
-            c.setFillColor(colors.HexColor("#475569")) # slate-600
+            c.setFillColor(colors.HexColor("#475569"))
             addr_y = issuer_y - 12*mm
             for line in data.issuer_address.splitlines():
                 c.drawRightString(width - 30*mm, addr_y, line)
@@ -119,14 +118,14 @@ class InvoiceService:
             c.setLineWidth(0.3)
             c.line(20*mm, y, width - 20*mm, y)
 
-        # --- 振込先・備考・集計 (最下段) ---
+        # --- 下段セクション ---
         bottom_y = y - 10*mm
         
-        # 振込先・備考
+        # 左側: 振込先・備考
         info_y = bottom_y
         if data.bank_info:
             c.setFont(bold_font_name, 8)
-            c.setFillColor(colors.HexColor("#94A3B8")) # slate-400
+            c.setFillColor(colors.HexColor("#94A3B8"))
             c.drawString(25*mm, info_y, "【お振込先】")
             c.setFillColor(colors.black)
             c.setFont(font_name, 9)
@@ -135,7 +134,7 @@ class InvoiceService:
                 c.drawString(25*mm, info_y, line)
                 info_y -= 4.5*mm
         
-        if data.notes:
+        if data.notes and data.notes.strip():
             info_y -= 5*mm
             c.setFont(bold_font_name, 8)
             c.setFillColor(colors.HexColor("#94A3B8"))
@@ -147,30 +146,41 @@ class InvoiceService:
                 c.drawString(25*mm, info_y, line)
                 info_y -= 4*mm
 
-        # 集計セクション (右寄せカード)
+        # 右側: 金額集計カード (小計・消費税合計・合計・内訳)
         summary_w = 70
-        summary_h = 25 + (len(data.tax_breakdown) * 8)
+        tax_rows = len(data.tax_breakdown)
+        summary_h = 28 + (tax_rows * 6)
+        
         c.setFillColor(colors.HexColor("#F8FAFC"))
-        c.rect(width - 90*mm, bottom_y - summary_h + 10*mm, 70*mm, summary_h, fill=1, stroke=0)
+        c.setStrokeColor(colors.HexColor("#E2E8F0"))
+        c.rect(width - 90*mm, bottom_y - summary_h + 10*mm, 70*mm, summary_h, fill=1, stroke=1)
         c.setFillColor(colors.black)
         
-        curr_summary_y = bottom_y + 4*mm
+        curr_y = bottom_y + 4*mm
         c.setFont(font_name, 9)
-        c.drawRightString(width - 55*mm, curr_summary_y, "小計 (税抜)")
-        c.drawRightString(width - 25*mm, curr_summary_y, f"¥{data.subtotal:,}")
+        c.drawRightString(width - 55*mm, curr_y, "小計 (税抜)")
+        c.drawRightString(width - 25*mm, curr_y, f"¥{data.subtotal:,}")
         
-        for rate, amount in data.tax_breakdown.items():
-            curr_summary_y -= 8*mm
-            c.drawRightString(width - 55*mm, curr_summary_y, f"消費税 ({rate})")
-            c.drawRightString(width - 25*mm, curr_summary_y, f"¥{amount:,}")
-            
-        curr_summary_y -= 10*mm
+        curr_y -= 7*mm
+        c.drawRightString(width - 55*mm, curr_y, "消費税 合計")
+        c.drawRightString(width - 25*mm, curr_y, f"¥{data.total_tax:,}")
+        
+        # 合計金額
+        curr_y -= 9*mm
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.5)
-        c.line(width - 85*mm, curr_summary_y + 8*mm, width - 25*mm, curr_summary_y + 8*mm)
+        c.line(width - 85*mm, curr_y + 7*mm, width - 25*mm, curr_y + 7*mm)
         c.setFont(bold_font_name, 11)
-        c.drawRightString(width - 55*mm, curr_summary_y, "税込合計金額")
-        c.drawRightString(width - 25*mm, curr_summary_y, f"¥{data.grand_total:,}")
+        c.drawRightString(width - 55*mm, curr_y, "税込合計金額")
+        c.drawRightString(width - 25*mm, curr_y, f"¥{data.grand_total:,}")
+        
+        # 税率別内訳
+        c.setFont(font_name, 7)
+        c.setFillColor(colors.HexColor("#64748B")) # slate-500
+        for rate, amount in data.tax_breakdown.items():
+            curr_y -= 5*mm
+            c.drawRightString(width - 55*mm, curr_y, f"（内訳：{rate}対象税額）")
+            c.drawRightString(width - 25*mm, curr_y, f"¥{amount:,}")
 
         # --- フッター ---
         c.setFont(font_name, 8)
