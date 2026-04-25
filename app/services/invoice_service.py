@@ -58,47 +58,59 @@ class InvoiceService:
         
         pdf.set_y(issuer_y_start + 25)
         
-        # 合計金額の強調表示
+        # 合計金額の強調表示 (プレビューのカードデザインに合わせる)
         pdf.set_font("NotoSansJP", "B", 14)
-        pdf.set_fill_color(245, 245, 245)
-        pdf.cell(0, 15, f"  合計金額:  ¥{data.grand_total:,} (税込)", border="TB", ln=True, fill=True)
+        pdf.set_fill_color(248, 250, 252) # slate-50
+        pdf.set_draw_color(241, 245, 249) # slate-100
+        pdf.cell(0, 18, f"  合計金額 (税込) :  ¥{data.grand_total:,}", border=1, ln=True, fill=True)
         pdf.ln(10)
         
         # 表ヘッダー (190mm を分割: 90, 15, 15, 35, 35)
-        pdf.set_fill_color(230, 230, 230)
+        pdf.set_draw_color(30, 41, 59) # slate-800
+        pdf.set_fill_color(248, 250, 252)
         pdf.set_font("NotoSansJP", "B", 9)
-        pdf.cell(90, 10, "内容 / 品目", border=1, fill=True, align="C")
-        pdf.cell(15, 10, "数量", border=1, fill=True, align="C")
-        pdf.cell(15, 10, "税率", border=1, fill=True, align="C")
-        pdf.cell(35, 10, "単価", border=1, fill=True, align="C")
-        pdf.cell(35, 10, "金額 (税抜)", border=1, fill=True, align="C", ln=True)
+        pdf.cell(90, 10, "内容 / 品目", border="TB", fill=True, align="C")
+        pdf.cell(15, 10, "数量", border="TB", fill=True, align="C")
+        pdf.cell(15, 10, "税率", border="TB", fill=True, align="C")
+        pdf.cell(35, 10, "単価", border="TB", fill=True, align="C")
+        pdf.cell(35, 10, "金額 (税抜)", border="TB", fill=True, align="C", ln=True)
         
         # 表データ
+        pdf.set_draw_color(241, 245, 249) # slate-100
         pdf.set_font("NotoSansJP", "", 9)
         for item in data.items:
-            pdf.cell(90, 10, f" {item.description}", border=1)
-            pdf.cell(15, 10, str(item.quantity), border=1, align="C")
-            pdf.cell(15, 10, f"{item.tax_rate}%", border=1, align="C")
-            pdf.cell(35, 10, f"¥{item.unit_price:,} ", border=1, align="R")
-            pdf.cell(35, 10, f"¥{item.total_exclusive:,} ", border=1, align="R", ln=True)
+            pdf.cell(90, 10, f" {item.description}", border="B")
+            pdf.cell(15, 10, str(item.quantity), border="B", align="C")
+            pdf.cell(15, 10, f"{item.tax_rate}%", border="B", align="C")
+            pdf.cell(35, 10, f"¥{item.unit_price:,} ", border="B", align="R")
+            pdf.cell(35, 10, f"¥{item.total_exclusive:,} ", border="B", align="R", ln=True)
             
-        pdf.ln(5)
+        pdf.ln(8)
         
-        # 集計セクション (右寄せ)
-        pdf.set_x(130)
-        pdf.set_font("NotoSansJP", "", 10)
-        pdf.cell(35, 8, "小計 (税抜):", border="B", align="R")
-        pdf.cell(35, 8, f"¥{data.subtotal:,} ", border="B", align="R", ln=True)
+        # 集計セクション (右寄せ・カードデザイン)
+        summary_x = 125
+        summary_w = 75
+        pdf.set_x(summary_x)
+        pdf.set_fill_color(248, 250, 252) # slate-50
+        pdf.set_draw_color(241, 245, 249) # slate-100
         
+        # 小計
+        pdf.set_font("NotoSansJP", "", 9)
+        pdf.cell(summary_w/2, 8, "小計 (税抜) ", align="R", fill=True)
+        pdf.cell(summary_w/2, 8, f"¥{data.subtotal:,} ", align="R", fill=True, ln=True)
+        
+        # 消費税内訳
         for rate, amount in data.tax_breakdown.items():
-            pdf.set_x(130)
-            pdf.cell(35, 8, f"消費税 ({rate}):", border="B", align="R")
-            pdf.cell(35, 8, f"¥{amount:,} ", border="B", align="R", ln=True)
+            pdf.set_x(summary_x)
+            pdf.cell(summary_w/2, 8, f"消費税 ({rate}) ", align="R", fill=True)
+            pdf.cell(summary_w/2, 8, f"¥{amount:,} ", align="R", fill=True, ln=True)
             
-        pdf.set_x(130)
+        # 税込合計
+        pdf.set_x(summary_x)
+        pdf.set_draw_color(30, 41, 59) # slate-800
         pdf.set_font("NotoSansJP", "B", 11)
-        pdf.cell(35, 10, "税込合計金額:", border="B", align="R")
-        pdf.cell(35, 10, f"¥{data.grand_total:,} ", border="B", align="R", ln=True)
+        pdf.cell(summary_w/2, 10, "税込合計金額 ", border="T", align="R", fill=True)
+        pdf.cell(summary_w/2, 10, f"¥{data.grand_total:,} ", border="T", align="R", fill=True, ln=True)
         
         # フッター
         pdf.set_y(-30)
