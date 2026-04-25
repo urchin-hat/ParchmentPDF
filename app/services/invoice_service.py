@@ -18,50 +18,52 @@ class InvoiceService:
 
         # フォント登録 (真の TrueType を使用)
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
-        # IPAexGothic を主役に使用 (Chrome での表示互換性 100%)
-        # もし NotoSansJP の TTF 版があればそちらに差し替え可能
-        font_path = os.path.join(font_dir, "ipaexg.ttf")
+        regular_font_path = os.path.join(font_dir, "JPFont-Regular.ttf")
+        bold_font_path = os.path.join(font_dir, "JPFont-Bold.ttf")
 
-        if not os.path.exists(font_path):
-            # 万が一ダウンロードに失敗していた場合のフォールバック
-            font_name = 'Helvetica'
-        else:
-            pdfmetrics.registerFont(TTFont('IPAexGothic', font_path))
-            font_name = 'IPAexGothic'
+        # pdfmetrics.registerFont で TTFont を登録
+        # TrueType アウトラインのため、Chrome/ReportLab ともに完璧に動作します。
+        pdfmetrics.registerFont(TTFont('JPFont', regular_font_path))
+        pdfmetrics.registerFont(TTFont('JPFont-Bold', bold_font_path))
+        
+        font_name = 'JPFont'
+        bold_font_name = 'JPFont-Bold'
 
         width, height = A4
 
+        # --- 描画開始 ---
         # タイトル
-        c.setFont(font_name, 24)
+        c.setFont(bold_font_name, 24)
         c.drawCentredString(width/2, height - 30*mm, "御請求書")
         
         c.setLineWidth(1)
         c.setStrokeColor(colors.black)
         c.line(width/2 - 20*mm, height - 33*mm, width/2 + 20*mm, height - 33*mm)
 
-        # メタデータ
+        # メタデータ (右寄せ)
         c.setFont(font_name, 10)
         c.drawRightString(width - 20*mm, height - 45*mm, f"請求書番号: {data.invoice_number}")
         c.drawRightString(width - 20*mm, height - 51*mm, f"発行日: {data.issue_date}")
 
-        # 宛先
-        c.setFont(font_name, 16)
+        # 宛先 (左寄せ)
+        c.setFont(bold_font_name, 16)
         c.drawString(20*mm, height - 65*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
         c.line(20*mm, height - 67*mm, 100*mm, height - 67*mm)
 
         # 合計金額バー
-        c.setFillColor(colors.HexColor("#F8FAFC"))
-        c.setStrokeColor(colors.HexColor("#E2E8F0"))
+        c.setFillColor(colors.HexColor("#F8FAFC")) # slate-50
+        c.setStrokeColor(colors.HexColor("#E2E8F0")) # slate-200
         c.rect(20*mm, height - 88*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
         c.setFillColor(colors.black)
-        c.setFont(font_name, 14)
+        c.setFont(bold_font_name, 14)
         c.drawString(28*mm, height - 80*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
         
-        # 発行者情報
+        # 発行者情報 (右寄せ)
         issuer_y = height - 105*mm
-        c.setFont(font_name, 11)
+        c.setFont(bold_font_name, 11)
         c.drawString(130*mm, issuer_y, "発行者:")
+        c.setFont(font_name, 11)
         c.drawString(130*mm, issuer_y - 7*mm, data.issuer_name)
 
         # 印影
@@ -85,7 +87,7 @@ class InvoiceService:
         c.line(20*mm, table_top - 10*mm, width - 20*mm, table_top - 10*mm)
         
         c.setFillColor(colors.black)
-        c.setFont(font_name, 9)
+        c.setFont(bold_font_name, 9)
         c.drawString(25*mm, table_top - 7*mm, "内容 / 品目")
         c.drawCentredString(110*mm, table_top - 7*mm, "数量")
         c.drawCentredString(125*mm, table_top - 7*mm, "税率")
@@ -126,7 +128,7 @@ class InvoiceService:
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.5)
         c.line(width - 90*mm, current_y + 8*mm, width - 25*mm, current_y + 8*mm)
-        c.setFont(font_name, 11)
+        c.setFont(bold_font_name, 11)
         c.drawRightString(width - 60*mm, current_y, "税込合計金額")
         c.drawRightString(width - 25*mm, current_y, f"¥{data.grand_total:,}")
 

@@ -112,11 +112,10 @@ async def generate_invoice(
     
     pdf_bytes = InvoiceService.generate_pdf(invoice_data)
     
-    # 日本語ファイル名に対応 (RFC 5987)
-    utf8_filename = f"請求書_{invoice_number}.pdf"
-    encoded_filename = quote(utf8_filename)
+    # Chrome の独自起源問題を避けるため、一旦 ASCII のみのファイル名に固定
+    filename = f"invoice_{invoice_number}.pdf"
     headers = {
-        'Content-Disposition': f'attachment; filename="{encoded_filename}"; filename*=UTF-8\'\'{encoded_filename}'
+        'Content-Disposition': f'attachment; filename="{filename}"'
     }
     return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
 
