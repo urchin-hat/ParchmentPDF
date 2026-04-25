@@ -8,7 +8,7 @@ from datetime import date
 from typing import List, Optional
 import io
 
-app = FastAPI(title="WashiSeikyu - 和紙請求")
+app = FastAPI(title="Nami-Seikyu - 波請求")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
