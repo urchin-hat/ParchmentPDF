@@ -44,13 +44,6 @@ def parse_invoice_form(
     for desc, qty, price_str, tax in zip(item_desc, item_qty, item_price, item_tax):
         if desc.strip():
             clean_price = int(price_str.replace(",", "")) if price_str else 0
-            items.append(InvoiceRequest.Item(description=desc, quantity=qty, unit_price=clean_price, tax_rate=tax)) # 型ヒント調整
-    
-    # 実際には InvoiceItem を使う (インポート済み)
-    items = []
-    for desc, qty, price_str, tax in zip(item_desc, item_qty, item_price, item_tax):
-        if desc.strip():
-            clean_price = int(price_str.replace(",", "")) if price_str else 0
             items.append(InvoiceItem(description=desc, quantity=qty, unit_price=clean_price, tax_rate=tax))
 
     return InvoiceRequest(
