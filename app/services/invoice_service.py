@@ -18,8 +18,9 @@ class InvoiceService:
 
         # 標準 CID フォントの登録 (埋め込み不要、互換性 100%)
         # HeiseiKakuGo-W5 はゴシック体、HeiseiMin-W3 は明朝体
-        pdfmetrics.registerFont(CIDFont('HeiseiKakuGo-W5'))
-        pdfmetrics.registerFont(CIDFont('HeiseiMin-W3'))
+        # UniJIS-UTF8-H エンコーディングを指定することで UTF-8 での日本語描画を可能にします。
+        pdfmetrics.registerFont(CIDFont('HeiseiKakuGo-W5', 'UniJIS-UTF8-H'))
+        pdfmetrics.registerFont(CIDFont('HeiseiMin-W3', 'UniJIS-UTF8-H'))
 
         width, height = A4
 
