@@ -35,11 +35,26 @@ class InvoiceService:
         pdf.set_font("NotoSansJP", "B", 16)
         pdf.cell(0, 10, f"{data.client_name} 御中", ln=True)
         pdf.set_line_width(0.5)
+        pdf.set_draw_color(30, 41, 59) # slate-800
         pdf.line(10, pdf.get_y(), 100, pdf.get_y()) # 下線
-        pdf.ln(15)
+        pdf.ln(5)
+
+        # 合計金額のカード表示 (宛名の下に配置)
+        pdf.set_font("NotoSansJP", "B", 11)
+        pdf.set_fill_color(248, 250, 252) # slate-50
+        pdf.set_draw_color(241, 245, 249) # slate-100
         
-        # 発行者情報 (右寄せ)
-        issuer_y_start = pdf.get_y()
+        current_y = pdf.get_y()
+        pdf.set_x(10)
+        pdf.cell(90, 22, "", border=1, fill=True) # カードの枠
+        pdf.set_xy(15, current_y + 4)
+        pdf.cell(0, 5, "合計金額 (税込)", ln=True)
+        pdf.set_font("NotoSansJP", "B", 18)
+        pdf.set_x(15)
+        pdf.cell(0, 10, f"¥{data.grand_total:,}", ln=True)
+        
+        # 発行者情報 (右寄せ) - 合計金額カードの横あたりに配置
+        pdf.set_y(issuer_y_start)
         pdf.set_font("NotoSansJP", "B", 11)
         pdf.set_x(120)
         pdf.cell(70, 7, "発行者:", ln=True, align="L")
@@ -56,14 +71,7 @@ class InvoiceService:
             except Exception as e:
                 print(f"Error generating seal: {e}")
         
-        pdf.set_y(issuer_y_start + 25)
-        
-        # 合計金額の強調表示 (プレビューのカードデザインに合わせる)
-        pdf.set_font("NotoSansJP", "B", 14)
-        pdf.set_fill_color(248, 250, 252) # slate-50
-        pdf.set_draw_color(241, 245, 249) # slate-100
-        pdf.cell(0, 18, f"  合計金額 (税込) :  ¥{data.grand_total:,}", border=1, ln=True, fill=True)
-        pdf.ln(10)
+        pdf.set_y(issuer_y_start + 30)
         
         # 表ヘッダー (190mm を分割: 90, 15, 15, 35, 35)
         pdf.set_draw_color(30, 41, 59) # slate-800
