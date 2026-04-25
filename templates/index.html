@@ -3,48 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ParchmentPDF - Re-spinning PDF to HTML</title>
+    <title>WashiSeikyu - 和紙請求</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+        
+        /* プレビューエリアのスクロール */
+        .preview-sticky {
+            position: sticky;
+            top: 1.5rem;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+        }
+
+        /* 印刷風の影 */
+        #invoice-preview-container {
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
-    <header class="bg-white border-b border-slate-200 py-6">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold text-slate-800">📜 ParchmentPDF</h1>
-            <p class="text-slate-500 mt-2">Re-spinning static PDFs into web-friendly HTML.</p>
+<body class="bg-slate-100 text-slate-900 font-sans min-h-screen">
+    <header class="bg-white border-b border-slate-200 py-4 shadow-sm mb-6">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span>📜</span> WashiSeikyu <span class="text-sm font-normal text-slate-400 ml-2">和紙請求 v2.2</span>
+            </h1>
+            <div class="text-xs text-slate-400">
+                Reliability First
+            </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-12">
-        <div class="max-w-2xl mx-auto">
-            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-                <h2 class="text-xl font-semibold mb-6">Convert PDF</h2>
-                <form hx-post="/convert" hx-encoding="multipart/form-data" hx-target="#result-area" class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Select PDF File</label>
-                        <input type="file" name="file" accept=".pdf" required
-                               class="block w-full text-sm text-slate-500
-                                      file:mr-4 file:py-2 file:px-4
-                                      file:rounded-full file:border-0
-                                      file:text-sm file:font-semibold
-                                      file:bg-slate-100 file:text-slate-700
-                                      hover:file:bg-slate-200 cursor-pointer">
+    <main class="container mx-auto px-4 pb-12">
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+            
+            <!-- 左カラム: 入力フォーム -->
+            <div class="space-y-6">
+                <form id="invoice-form" action="/generate" method="POST"
+                      hx-post="/preview" hx-target="#preview-area" 
+                      hx-trigger="load, change delay:200ms, keyup delay:500ms from:input, keyup delay:500ms from:textarea">
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-lg font-bold text-slate-700 border-b pb-2">基本情報</h2>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求書番号</label>
+                                <input type="text" name="invoice_number" value="{{ default_invoice_no }}" required
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行日</label>
+                                <input type="date" name="issue_date" value="{{ today }}" required
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名 (From)</label>
+                                <input type="text" name="issuer_name" placeholder="例: 合同会社パピルス" required
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>
+                                <input type="text" name="seal_text" placeholder="例: 代表之印"
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
+                                <input type="text" name="client_name" placeholder="例: 株式会社サンプル" required
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" 
-                            class="w-full bg-slate-800 text-white py-2 px-4 rounded-lg font-medium hover:bg-slate-700 transition-colors">
-                        Re-spin to HTML
-                    </button>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-bold text-slate-700">請求明細</h2>
+                            <button type="button" 
+                                    hx-get="/add-item" 
+                                    hx-target="#items-container" 
+                                    hx-swap="beforeend"
+                                    class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="12 4v16m8-8H4" />
+                                </svg>
+                                行を追加
+                            </button>
+                        </div>
+
+                        <div id="items-container">
+                            {% include "fragments/item_row.html" %}
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-4">
+                        <button type="submit" form="invoice-form" formaction="/generate"
+                                class="flex-1 bg-slate-800 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-slate-700 transition-all shadow-lg flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            PDFをダウンロード
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            <div id="result-area" class="mt-12">
-                <!-- Conversion result will appear here -->
+            <!-- 右カラム: ライブプレビュー -->
+            <div class="preview-sticky">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        Live Preview
+                    </span>
+                    <div class="htmx-indicator text-xs text-slate-400 animate-pulse">更新中...</div>
+                </div>
+                <div id="preview-area" class="origin-top transition-all duration-300">
+                    <div class="bg-white p-20 shadow-sm border border-slate-200 rounded-xl text-center text-slate-300">
+                        読み込み中...
+                    </div>
+                </div>
             </div>
+
         </div>
     </main>
 
-    <footer class="mt-auto py-8 border-t border-slate-200 text-center text-slate-400 text-sm">
-        &copy; 2026 ParchmentPDF. Built with SRE Principles.
+    <footer class="mt-auto py-12 border-t border-slate-200 text-center">
+        <div class="container mx-auto px-4">
+            <p class="text-slate-400 text-sm font-medium uppercase tracking-widest">
+                WashiSeikyu - 和紙請求
+            </p>
+        </div>
     </footer>
 </body>
 </html>

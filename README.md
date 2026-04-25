@@ -1,6 +1,6 @@
-# ParchmentPDF 📜
+# WashiSeikyu (和紙請求) 📜
 
-ParchmentPDFは、固定されたPDFドキュメントを、Webフレンドリーで再利用可能なHTMLへと「再紡績（Re-spinning）」するサービスです。
+WashiSeikyu（和紙請求）は、ビジネスの現場で必要な「請求書」を、ブラウザ上で素早く作成し、美しく構造化されたPDFとして発行するサービスです。
 
 ## 🚀 開発環境での起動方法
 
@@ -26,14 +26,13 @@ docker-compose up --build
 podman-compose up --build
 ```
 
-## 🛠 技術スタック
-- **Backend**: Python 3.12 / FastAPI
-- **Frontend**: htmx / Tailwind CSS
-- **PDF Engine**: PyMuPDF (fitz)
-- **Package Manager**: uv
+## 🛠 特徴
+- **ライブプレビュー**: 入力内容をリアルタイムで確認可能。
+- **日本語・印影対応**: Noto Sans JP フォントと電子印鑑の自動生成。
+- **ステートレス**: サーバーにデータを保存しない高いセキュリティ。
 
 ## 📁 ディレクトリ構造
-- `app/`: アプリケーションロジック（変換サービス、ユーティリティ）
-- `static/`: 静的ファイル
+- `app/`: アプリケーションロジック（請求書生成、モデル、印影生成）
+- `static/`: フォント、静的ファイル
 - `templates/`: Jinja2 テンプレート
 - `DESIGN.md`: 詳細な設計ドキュメント
