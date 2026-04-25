@@ -18,19 +18,26 @@ class InvoiceService:
 
         # フォント登録
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
-        # NotoSansJP-Regular.otf (OpenType/CFF) を TTFont として登録
-        # ReportLab 4.x + fonttools があれば、OTF もこの方法で読み込める場合があります。
+        # 拡張子が .ttf であっても中身が OTF の場合、ReportLab は一部の環境で描画に失敗します。
+        # 確実に TrueType アウトライン版の Noto Sans JP を使用することを強く推奨します。
         regular_font_path = os.path.join(font_dir, "NotoSansJP-Regular.otf")
         bold_font_path = os.path.join(font_dir, "NotoSansJP-Bold.otf")
 
+        # TTF版が存在すればそちらを優先（変換済みまたはダウンロード済みを想定）
+        if os.path.exists(os.path.join(font_dir, "NotoSansJP-Regular.ttf")):
+            regular_font_path = os.path.join(font_dir, "NotoSansJP-Regular.ttf")
+        if os.path.exists(os.path.join(font_dir, "NotoSansJP-Bold.ttf")):
+            bold_font_path = os.path.join(font_dir, "NotoSansJP-Bold.ttf")
+
         try:
-            pdfmetrics.registerFont(TTFont('NotoSansJP', regular_font_path))
-            pdfmetrics.registerFont(TTFont('NotoSansJP-Bold', bold_font_path))
+            # ReportLab 4.x では fonttools があれば OTF も TTFont クラスで読み込めるはずですが、
+            # 描画の不整合を避けるため validate=True を指定
+            pdfmetrics.registerFont(TTFont('NotoSansJP', regular_font_path, validate=True))
+            pdfmetrics.registerFont(TTFont('NotoSansJP-Bold', bold_font_path, validate=True))
             font_name = 'NotoSansJP'
             bold_font_name = 'NotoSansJP-Bold'
         except Exception as e:
             print(f"Font registration error: {e}")
-            # もし OTF が読み込めない場合は、標準フォントにフォールバック（日本語は表示されませんがエラー回避）
             font_name = 'Helvetica'
             bold_font_name = 'Helvetica-Bold'
 
@@ -40,17 +47,16 @@ class InvoiceService:
         c.setFont(bold_font_name, 24)
         c.drawCentredString(width/2, height - 30*mm, "御請求書")
         
-        # タイトル下線
         c.setLineWidth(1)
         c.setStrokeColor(colors.black)
         c.line(width/2 - 20*mm, height - 33*mm, width/2 + 20*mm, height - 33*mm)
 
-        # メタデータ (右寄せ)
+        # メタデータ
         c.setFont(font_name, 10)
         c.drawRightString(width - 20*mm, height - 45*mm, f"請求書番号: {data.invoice_number}")
         c.drawRightString(width - 20*mm, height - 51*mm, f"発行日: {data.issue_date}")
 
-        # 宛先 (左寄せ)
+        # 宛先
         c.setFont(bold_font_name, 16)
         c.drawString(20*mm, height - 65*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
