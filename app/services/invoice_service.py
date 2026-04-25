@@ -67,16 +67,21 @@ class InvoiceService:
         if data.client_contact_person:
             c.setFont(font_name, 11)
             c.setFillColor(colors.HexColor("#334155"))
-            c.drawString(25*mm, client_y - 9*mm, data.client_contact_person)
+            c.drawString(25*mm, client_y - 9*mm, f"{data.client_contact_person} 様")
             client_y -= 7*mm
+
+        # 挨拶文
+        c.setFont(font_name, 10)
+        c.setFillColor(colors.black)
+        c.drawString(20*mm, client_y - 12*mm, "下記の通りご請求申し上げます。")
 
         # --- 合計金額バー ---
         c.setFillColor(colors.HexColor("#F8FAFC"))
         c.setStrokeColor(colors.HexColor("#E2E8F0"))
-        c.rect(20*mm, height - 88*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
+        c.rect(20*mm, height - 93*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
         c.setFillColor(colors.black)
         c.setFont(bold_font_name, 14)
-        c.drawString(28*mm, height - 80*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
+        c.drawString(28*mm, height - 85*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
         
         # --- 発行者情報 (右寄せ) ---
         issuer_y = height - 105*mm
