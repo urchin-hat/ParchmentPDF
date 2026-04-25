@@ -32,14 +32,14 @@ def parse_invoice_form(
     seal_text: Optional[str],
     item_desc: List[str],
     item_qty: List[int],
-    item_price: List[str] # カンマ付きで送られるため str に変更
+    item_price: List[str],
+    item_tax: List[int] # 追加
 ) -> InvoiceRequest:
     items = []
-    for desc, qty, price_str in zip(item_desc, item_qty, item_price):
+    for desc, qty, price_str, tax in zip(item_desc, item_qty, item_price, item_tax):
         if desc.strip():
-            # カンマを除去して数値に変換
             clean_price = int(price_str.replace(",", "")) if price_str else 0
-            items.append(InvoiceItem(description=desc, quantity=qty, unit_price=clean_price))
+            items.append(InvoiceItem(description=desc, quantity=qty, unit_price=clean_price, tax_rate=tax))
     
     return InvoiceRequest(
         invoice_number=invoice_number,
@@ -75,11 +75,12 @@ async def preview_invoice(
     seal_text: str = Form(None),
     item_desc: List[str] = Form(...),
     item_qty: List[int] = Form(...),
-    item_price: List[str] = Form(...)
+    item_price: List[str] = Form(...),
+    item_tax: List[int] = Form(...) # 追加
 ):
     invoice_data = parse_invoice_form(
         invoice_number, issue_date, client_name, issuer_name, seal_text, 
-        item_desc, item_qty, item_price
+        item_desc, item_qty, item_price, item_tax
     )
     
     return templates.TemplateResponse(
@@ -100,11 +101,12 @@ async def generate_invoice(
     seal_text: str = Form(None),
     item_desc: List[str] = Form(...),
     item_qty: List[int] = Form(...),
-    item_price: List[str] = Form(...)
+    item_price: List[str] = Form(...),
+    item_tax: List[int] = Form(...) # 追加
 ):
     invoice_data = parse_invoice_form(
         invoice_number, issue_date, client_name, issuer_name, seal_text, 
-        item_desc, item_qty, item_price
+        item_desc, item_qty, item_price, item_tax
     )
     
     pdf_bytes = InvoiceService.generate_pdf(invoice_data)
