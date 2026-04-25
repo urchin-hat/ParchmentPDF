@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParchmentPDF - Re-spinning PDF to HTML</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
+    <header class="bg-white border-b border-slate-200 py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold text-slate-800">📜 ParchmentPDF</h1>
+            <p class="text-slate-500 mt-2">Re-spinning static PDFs into web-friendly HTML.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-semibold mb-6">Convert PDF</h2>
+                <form hx-post="/convert" hx-encoding="multipart/form-data" hx-target="#result-area" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Select PDF File</label>
+                        <input type="file" name="file" accept=".pdf" required
+                               class="block w-full text-sm text-slate-500
+                                      file:mr-4 file:py-2 file:px-4
+                                      file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:bg-slate-100 file:text-slate-700
+                                      hover:file:bg-slate-200 cursor-pointer">
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-slate-800 text-white py-2 px-4 rounded-lg font-medium hover:bg-slate-700 transition-colors">
+                        Re-spin to HTML
+                    </button>
+                </form>
+            </div>
+
+            <div id="result-area" class="mt-12">
+                <!-- Conversion result will appear here -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+        &copy; 2026 ParchmentPDF. Built with SRE Principles.
+    </footer>
+</body>
+</html>
