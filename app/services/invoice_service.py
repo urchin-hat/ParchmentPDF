@@ -56,12 +56,11 @@ class InvoiceService:
         if seal_text:
             try:
                 seal_bytes = generate_seal_image(seal_text)
-                # 印影を発行者名の横に配置
                 pdf.image(io.BytesIO(seal_bytes), x=165, y=issuer_y_start, w=22, h=22)
             except Exception as e:
                 print(f"Error generating seal: {e}")
         
-        pdf.set_y(issuer_y_start + 25) # 情報量に合わせて調整
+        pdf.set_y(issuer_y_start + 25)
         
         # 合計金額の強調表示
         pdf.set_font("NotoSansJP", "B", 14)
@@ -69,26 +68,46 @@ class InvoiceService:
         pdf.cell(0, 15, f"  合計金額:  ¥{data.grand_total:,} (税込)", border="TB", ln=True, fill=True)
         pdf.ln(10)
         
-        # 表ヘッダー (190mm を分割: 100, 20, 35, 35)
+        # 表ヘッダー (190mm を分割: 90, 15, 15, 35, 35)
         pdf.set_fill_color(230, 230, 230)
-        pdf.set_font("NotoSansJP", "B", 10)
-        pdf.cell(100, 10, "内容 / 品目", border=1, fill=True, align="C")
-        pdf.cell(20, 10, "数量", border=1, fill=True, align="C")
+        pdf.set_font("NotoSansJP", "B", 9)
+        pdf.cell(90, 10, "内容 / 品目", border=1, fill=True, align="C")
+        pdf.cell(15, 10, "数量", border=1, fill=True, align="C")
+        pdf.cell(15, 10, "税率", border=1, fill=True, align="C")
         pdf.cell(35, 10, "単価", border=1, fill=True, align="C")
-        pdf.cell(35, 10, "金額", border=1, fill=True, align="C", ln=True)
+        pdf.cell(35, 10, "金額 (税抜)", border=1, fill=True, align="C", ln=True)
         
         # 表データ
-        pdf.set_font("NotoSansJP", "", 10)
+        pdf.set_font("NotoSansJP", "", 9)
         for item in data.items:
-            pdf.cell(100, 10, f" {item.description}", border=1)
-            pdf.cell(20, 10, str(item.quantity), border=1, align="C")
+            pdf.cell(90, 10, f" {item.description}", border=1)
+            pdf.cell(15, 10, str(item.quantity), border=1, align="C")
+            pdf.cell(15, 10, f"{item.tax_rate}%", border=1, align="C")
             pdf.cell(35, 10, f"¥{item.unit_price:,} ", border=1, align="R")
-            pdf.cell(35, 10, f"¥{item.total:,} ", border=1, align="R", ln=True)
+            pdf.cell(35, 10, f"¥{item.total_exclusive:,} ", border=1, align="R", ln=True)
             
+        pdf.ln(5)
+        
+        # 集計セクション (右寄せ)
+        pdf.set_x(130)
+        pdf.set_font("NotoSansJP", "", 10)
+        pdf.cell(35, 8, "小計 (税抜):", border="B", align="R")
+        pdf.cell(35, 8, f"¥{data.subtotal:,} ", border="B", align="R", ln=True)
+        
+        for rate, amount in data.tax_breakdown.items():
+            pdf.set_x(130)
+            pdf.cell(35, 8, f"消費税 ({rate}):", border="B", align="R")
+            pdf.cell(35, 8, f"¥{amount:,} ", border="B", align="R", ln=True)
+            
+        pdf.set_x(130)
+        pdf.set_font("NotoSansJP", "B", 11)
+        pdf.cell(35, 10, "税込合計金額:", border="B", align="R")
+        pdf.cell(35, 10, f"¥{data.grand_total:,} ", border="B", align="R", ln=True)
+        
         # フッター
         pdf.set_y(-30)
         pdf.set_font("NotoSansJP", "", 8)
         pdf.set_text_color(150, 150, 150)
-        pdf.cell(0, 10, "本請求書は ParchmentPDF により自動生成されました。", align="C")
+        pdf.cell(0, 10, "本請求書は Nami-Seikyu により自動生成されました。", align="C")
         
         return bytes(pdf.output())

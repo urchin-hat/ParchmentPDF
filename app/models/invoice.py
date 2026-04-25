@@ -6,10 +6,22 @@ class InvoiceItem(BaseModel):
     description: str = Field(..., description="品目名")
     quantity: int = Field(..., gt=0, description="数量")
     unit_price: int = Field(..., gt=0, description="単価")
+    tax_rate: int = Field(10, description="消費税率 (%)")
 
     @property
-    def total(self) -> int:
+    def total_exclusive(self) -> int:
+        """税抜金額"""
         return self.quantity * self.unit_price
+
+    @property
+    def tax_amount(self) -> int:
+        """この品目の消費税額 (小数点以下切り捨て)"""
+        return int(self.total_exclusive * (self.tax_rate / 100))
+
+    @property
+    def total_inclusive(self) -> int:
+        """税込金額"""
+        return self.total_exclusive + self.tax_amount
 
 class InvoiceRequest(BaseModel):
     invoice_number: str = Field(..., description="請求書番号")
@@ -20,5 +32,25 @@ class InvoiceRequest(BaseModel):
     items: List[InvoiceItem] = Field(..., min_items=1, description="品目リスト")
 
     @property
+    def subtotal(self) -> int:
+        """全体の税抜小計"""
+        return sum(item.total_exclusive for item in self.items)
+
+    @property
+    def total_tax(self) -> int:
+        """消費税額の合計"""
+        return sum(item.tax_amount for item in self.items)
+
+    @property
     def grand_total(self) -> int:
-        return sum(item.total for item in self.items)
+        """税込合計金額"""
+        return self.subtotal + self.total_tax
+
+    @property
+    def tax_breakdown(self) -> dict:
+        """税率別の税額内訳"""
+        breakdown = {}
+        for item in self.items:
+            rate = f"{item.tax_rate}%"
+            breakdown[rate] = breakdown.get(rate, 0) + item.tax_amount
+        return breakdown
