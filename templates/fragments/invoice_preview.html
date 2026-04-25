@@ -1,22 +1,31 @@
-<div class="bg-white p-12 shadow-2xl border border-slate-200 mx-auto max-w-[210mm] min-h-[297mm] text-slate-800 font-sans relative overflow-hidden" id="invoice-preview-container">
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold tracking-widest text-slate-900">御請求書</h1>
+<div class="bg-white p-10 shadow-xl border border-slate-200 mx-auto max-w-[210mm] min-h-[297mm] text-slate-800 font-sans relative overflow-hidden rounded-xl" id="invoice-preview-container">
+    <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold tracking-widest text-slate-900">御請求書</h1>
+        <div class="h-1 w-20 bg-slate-800 mx-auto mt-2"></div>
     </div>
 
-    <div class="flex justify-between mb-12">
-        <div>
-            <p class="text-sm text-slate-500 mb-1">振込先（宛名）</p>
-            <h2 class="text-2xl font-bold border-b-2 border-slate-800 pb-1">{{ invoice.client_name or '　　　　　' }} 御中</h2>
+    <div class="flex justify-between mb-10">
+        <div class="space-y-4">
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
+                <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 min-w-[200px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
+            </div>
+            <div class="bg-slate-50 p-4 border border-slate-100 rounded-lg">
+                <span class="text-lg font-bold">合計金額 (税込)</span>
+                <span class="text-2xl font-black block mt-1">¥{{ invoice.grand_total | font_format_currency }}</span>
+            </div>
         </div>
-        <div class="text-right">
-            <p class="text-sm text-slate-500">請求書番号: {{ invoice.invoice_number }}</p>
-            <p class="text-sm text-slate-500">発行日: {{ invoice.issue_date }}</p>
+        <div class="text-right flex flex-col justify-between">
+            <div class="space-y-1">
+                <p class="text-xs text-slate-400">請求書番号: <span class="text-slate-700 font-mono">{{ invoice.invoice_number }}</span></p>
+                <p class="text-xs text-slate-400">発行日: <span class="text-slate-700 font-mono">{{ invoice.issue_date }}</span></p>
+            </div>
             <div class="mt-4 relative">
-                <p class="text-sm text-slate-500">発行者</p>
-                <p class="text-lg font-bold">{{ invoice.issuer_name or '　　　　　' }}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">発行者</p>
+                <p class="text-lg font-bold text-slate-800">{{ invoice.issuer_name or '　　　　　' }}</p>
                 {% if invoice.seal_text %}
-                <div class="absolute -right-4 -top-2 opacity-80 pointer-events-none" id="preview-seal">
-                    <div class="w-16 h-16 border-4 border-red-600 flex items-center justify-center text-red-600 font-bold text-xs p-1 transform rotate-12">
+                <div class="absolute -right-2 -top-4 opacity-90 pointer-events-none" id="preview-seal">
+                    <div class="w-14 h-14 border-2 border-red-500 rounded-sm flex items-center justify-center text-red-500 font-bold text-[10px] p-1 transform rotate-12 leading-tight ring-1 ring-red-500 ring-offset-1">
                         {{ invoice.seal_text }}
                     </div>
                 </div>
@@ -25,60 +34,54 @@
         </div>
     </div>
 
-    <div class="mb-8">
-        <div class="bg-slate-50 p-4 border-t-2 border-b-2 border-slate-800 flex justify-between items-center">
-            <span class="text-xl font-bold">合計金額 (税込)</span>
-            <span class="text-3xl font-bold">¥{{ invoice.grand_total | font_format_currency }}</span>
-        </div>
-    </div>
-
     <table class="w-full mb-8 border-collapse">
         <thead>
-            <tr class="bg-slate-100">
-                <th class="border border-slate-300 p-2 text-left">内容 / 品目</th>
-                <th class="border border-slate-300 p-2 text-center w-16">数量</th>
-                <th class="border border-slate-300 p-2 text-center w-16">税率</th>
-                <th class="border border-slate-300 p-2 text-right w-28">単価</th>
-                <th class="border border-slate-300 p-2 text-right w-28">金額 (税抜)</th>
+            <tr class="bg-slate-50 border-t-2 border-b border-slate-800">
+                <th class="p-3 text-left text-xs font-bold text-slate-600 uppercase">内容 / 品目</th>
+                <th class="p-3 text-center text-xs font-bold text-slate-600 uppercase w-16">数量</th>
+                <th class="p-3 text-center text-xs font-bold text-slate-600 uppercase w-16">税率</th>
+                <th class="p-3 text-right text-xs font-bold text-slate-600 uppercase w-28">単価</th>
+                <th class="p-3 text-right text-xs font-bold text-slate-600 uppercase w-28 text-slate-900">金額 (税抜)</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100">
             {% for item in invoice.items %}
-            <tr>
-                <td class="border border-slate-300 p-2 text-sm">{{ item.description or '　' }}</td>
-                <td class="border border-slate-300 p-2 text-center text-sm">{{ item.quantity }}</td>
-                <td class="border border-slate-300 p-2 text-center text-xs text-slate-500">{{ item.tax_rate }}%</td>
-                <td class="border border-slate-300 p-2 text-right text-sm">¥{{ item.unit_price | font_format_currency }}</td>
-                <td class="border border-slate-300 p-2 text-right text-sm">¥{{ item.total_exclusive | font_format_currency }}</td>
+            <tr class="group">
+                <td class="p-3 text-sm text-slate-700">{{ item.description or '　' }}</td>
+                <td class="p-3 text-center text-sm text-slate-600">{{ item.quantity }}</td>
+                <td class="p-3 text-center text-[10px] font-bold text-slate-400">{{ item.tax_rate }}%</td>
+                <td class="p-3 text-right text-sm text-slate-600">¥{{ item.unit_price | font_format_currency }}</td>
+                <td class="p-3 text-right text-sm font-bold text-slate-900">¥{{ item.total_exclusive | font_format_currency }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" class="border border-slate-300 p-8 text-center text-slate-300 italic">品目が追加されていません</td>
+                <td colspan="5" class="p-12 text-center text-slate-300 italic text-sm">品目が追加されていません</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <div class="flex justify-end">
-        <div class="w-64 space-y-2">
-            <div class="flex justify-between text-sm">
-                <span class="text-slate-500">小計 (税抜):</span>
-                <span>¥{{ invoice.subtotal | font_format_currency }}</span>
+    <div class="flex justify-end pt-4">
+        <div class="w-72 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-400">小計 (税抜)</span>
+                <span class="text-slate-700 font-mono">¥{{ invoice.subtotal | font_format_currency }}</span>
             </div>
             {% for rate, amount in invoice.tax_breakdown.items() %}
-            <div class="flex justify-between text-sm">
-                <span class="text-slate-500">消費税 ({{ rate }}):</span>
-                <span>¥{{ amount | font_format_currency }}</span>
+            <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-400">消費税 ({{ rate }})</span>
+                <span class="text-slate-700 font-mono">¥{{ amount | font_format_currency }}</span>
             </div>
             {% endfor %}
-            <div class="flex justify-between text-lg font-bold border-t border-slate-800 pt-2">
-                <span>税込合計:</span>
+            <div class="flex justify-between text-base font-black border-t border-slate-200 pt-2 text-slate-900">
+                <span>税込合計金額</span>
                 <span>¥{{ invoice.grand_total | font_format_currency }}</span>
             </div>
         </div>
     </div>
 
-    <div class="absolute bottom-12 left-0 right-0 text-center text-slate-400 text-[10px]">
-        本請求書は Nami-Seikyu により自動生成されました。
+    <div class="absolute bottom-8 left-0 right-0 text-center text-slate-300 text-[9px] font-medium tracking-widest">
+        NAMI-SEIKYU INVOICE SYSTEM
     </div>
 </div>
+
