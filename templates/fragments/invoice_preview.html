@@ -124,13 +124,14 @@
             </div>
         </div>
     </div>
+<!-- 備考 (最下部) -->
+{% if invoice.notes %}
+<div class="mt-12 p-4 border border-slate-200 rounded-xl bg-slate-50/30">
+    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">備考 / 特記事項</p>
+    <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
+</div>
+{% endif %}
 
-    {% if invoice.notes %}
-    <div class="mt-12 pt-6 border-t border-slate-100">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">備考 / 特記事項</p>
-        <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
-    </div>
-    {% endif %}
 
     <div class="absolute bottom-8 left-0 right-0 text-center text-slate-300 text-[9px] font-medium tracking-widest">
         NAMI-SEIKYU INVOICE SYSTEM

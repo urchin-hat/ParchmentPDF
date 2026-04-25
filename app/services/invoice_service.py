@@ -198,19 +198,25 @@ class InvoiceService:
 
         # --- 最下段: 備考 ---
         if data.notes and data.notes.strip():
-            notes_y = summary_y_top - summary_h - 15*mm
-            c.setStrokeColor(colors.HexColor("#F1F5F9"))
-            c.line(20*mm, notes_y + 5*mm, width - 20*mm, notes_y + 5*mm)
+            # 備考の行数をカウントして枠の高さを決定
+            note_lines = data.notes.splitlines()
+            notes_h = 12 + (len(note_lines) * 4)
+            notes_y_top = summary_y_top - summary_h - 15*mm
+            
+            # 枠線の描画 (薄いグレー)
+            c.setStrokeColor(colors.HexColor("#E2E8F0"))
+            c.setFillColor(colors.HexColor("#F8FAFC"))
+            c.rect(20*mm, notes_y_top - notes_h + 5*mm, width - 40*mm, notes_h, fill=0, stroke=1)
             
             c.setFont(bold_font_name, 8)
             c.setFillColor(colors.HexColor("#94A3B8"))
-            c.drawString(25*mm, notes_y, "【備考 / 特記事項】")
+            c.drawString(25*mm, notes_y_top, "【備考 / 特記事項】")
             c.setFillColor(colors.black)
             c.setFont(font_name, 8)
-            notes_y -= 5*mm
-            for line in data.notes.splitlines():
-                c.drawString(25*mm, notes_y, line)
-                notes_y -= 4*mm
+            curr_note_y = notes_y_top - 5*mm
+            for line in note_lines:
+                c.drawString(25*mm, curr_note_y, line)
+                curr_note_y -= 4*mm
 
         # --- フッター ---
         c.setFont(font_name, 8)
