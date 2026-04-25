@@ -6,6 +6,7 @@
     <title>Nami-Seikyu - 波請求</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
     <style>
         .htmx-indicator { display: none; }
         .htmx-request .htmx-indicator { display: inline-block; }
@@ -41,10 +42,12 @@
             
             <!-- 左カラム: 入力フォーム -->
             <div class="space-y-6">
-                <form id="invoice-form" action="/generate" method="POST"
+                <form id="invoice-form" action="/generate" method="POST" class="h-adr"
                       hx-post="/preview" hx-target="#preview-area" 
                       hx-trigger="load, change delay:200ms, keyup delay:500ms from:input, keyup delay:500ms from:textarea">
                     
+                    <span class="p-country-name" style="display:none;">Japan</span>
+
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
                         <h2 class="text-lg font-bold text-slate-700 border-b pb-2">基本情報</h2>
                         
@@ -73,12 +76,12 @@
                                 <div class="col-span-1">
                                     <label for="client_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
                                     <input type="text" name="client_postal_code" id="client_postal_code" placeholder="123-4567"
-                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
+                                           class="p-postal-code w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
                                 </div>
                                 <div class="col-span-3">
                                     <label for="client_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 住所</label>
                                     <input type="text" name="client_address" id="client_address" placeholder="例: 東京都千代田区宛先町2-2-2"
-                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                           class="p-region p-locality p-street-address p-extended-address w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
@@ -106,12 +109,12 @@
                                 <div class="col-span-1">
                                     <label for="issuer_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
                                     <input type="text" name="issuer_postal_code" id="issuer_postal_code" placeholder="100-0001"
-                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
+                                           class="p-postal-code w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
                                 </div>
                                 <div class="col-span-3">
                                     <label for="issuer_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者 住所</label>
                                     <input type="text" name="issuer_address" id="issuer_address" placeholder="例: 東京都千代田区1-1-1"
-                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                           class="p-region p-locality p-street-address p-extended-address w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
                                 </div>
                             </div>
                             <div>
