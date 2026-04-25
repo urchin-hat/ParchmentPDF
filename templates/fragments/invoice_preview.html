@@ -94,14 +94,14 @@
         <div class="w-1/2">
             {% if invoice.bank_info %}
             <div class="p-4 border border-slate-100 bg-slate-50/50 rounded-xl">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">お振込先</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-slate-400">【お振込先】</p>
                 <p class="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-relaxed">{{ invoice.bank_info }}</p>
             </div>
             {% endif %}
         </div>
 
         <!-- 金額内訳 -->
-        <div class="w-64 space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <div class="w-72 space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div class="flex justify-between text-xs">
                 <span class="text-slate-400">小計 (税抜)</span>
                 <span class="text-slate-700 font-mono">¥{{ invoice.subtotal | font_format_currency }}</span>
@@ -111,8 +111,9 @@
                 <span class="text-slate-700 font-mono">¥{{ invoice.total_tax | font_format_currency }}</span>
             </div>
             
+            <!-- 税率別内訳 (PDFと同じスッキリした表示に) -->
             {% for rate, amount in invoice.tax_breakdown.items() %}
-            <div class="flex justify-between text-[10px] text-slate-400 pt-0.5">
+            <div class="flex justify-between text-[10px] text-slate-400">
                 <span>（{{ rate }}対象消費税）</span>
                 <span>¥{{ amount | font_format_currency }}</span>
             </div>
@@ -124,16 +125,16 @@
             </div>
         </div>
     </div>
-<!-- 備考 (最下部) -->
-{% if invoice.notes %}
-<div class="mt-12 p-4 border border-slate-200 rounded-xl bg-slate-50/30">
-    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">備考 / 特記事項</p>
-    <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
-</div>
-{% endif %}
 
+    <!-- 備考 (最下部) -->
+    {% if invoice.notes %}
+    <div class="mt-8 p-4 border border-slate-200 rounded-xl bg-white">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-slate-400">【備考 / 特記事項】</p>
+        <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
 
-    <div class="absolute bottom-8 left-0 right-0 text-center text-slate-300 text-[9px] font-medium tracking-widest">
+    <div class="absolute bottom-6 left-0 right-0 text-center text-slate-300 text-[9px] font-medium tracking-widest">
         NAMI-SEIKYU INVOICE SYSTEM
     </div>
 </div>

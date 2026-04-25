@@ -156,13 +156,22 @@ class InvoiceService:
         # 左側: 振込先
         bank_y_bottom = mid_y
         if data.bank_info:
+            bank_lines = data.bank_info.splitlines()
+            bank_h = 10 + (len(bank_lines) * 4.5)
+            
+            # 振込先の背景と枠線 (プレビューに合わせる)
+            c.setLineWidth(0.3)
+            c.setStrokeColor(colors.HexColor("#F1F5F9")) # slate-100相当
+            c.setFillColor(colors.HexColor("#F8FAFC")) # slate-50相当
+            c.rect(20*mm, mid_y - bank_h + 4*mm, 80*mm, bank_h, fill=1, stroke=1)
+            
             c.setFont(bold_font_name, 8)
             c.setFillColor(colors.HexColor("#94A3B8"))
             c.drawString(25*mm, mid_y, "【お振込先】")
             c.setFillColor(colors.black)
             c.setFont(font_name, 9)
             bank_curr_y = mid_y - 5*mm
-            for line in data.bank_info.splitlines():
+            for line in bank_lines:
                 c.drawString(25*mm, bank_curr_y, line)
                 bank_curr_y -= 4.5*mm
             bank_y_bottom = bank_curr_y
