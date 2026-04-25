@@ -9,9 +9,6 @@ class InvoiceService:
     def generate_pdf(data: InvoiceRequest) -> bytes:
         pdf = FPDF(unit="mm", format="A4")
         
-        pdf.set_title(f"請求書_{data.invoice_number}")
-        pdf.set_author(data.issuer_name)
-        
         # フォントパスの解決
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
         regular_font = os.path.join(font_dir, "NotoSansJP-Regular.otf")
