@@ -50,31 +50,31 @@
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求書番号</label>
-                                <input type="text" name="invoice_number" value="{{ default_invoice_no }}" required
+                                <label for="invoice_number" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求書番号</label>
+                                <input type="text" name="invoice_number" id="invoice_number" value="{{ default_invoice_no }}" required
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行日</label>
-                                <input type="date" name="issue_date" value="{{ today }}" required
+                                <label for="issue_date" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行日</label>
+                                <input type="date" name="issue_date" id="issue_date" value="{{ today }}" required
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                         </div>
 
                         <div class="space-y-4 pt-2">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名 (From)</label>
-                                <input type="text" name="issuer_name" placeholder="例: 波請求株式会社" required
+                                <label for="issuer_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名 (From)</label>
+                                <input type="text" name="issuer_name" id="issuer_name" placeholder="例: 波請求株式会社" required
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>
-                                <input type="text" name="seal_text" placeholder="例: 代表之印"
+                                <label for="seal_text" class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>
+                                <input type="text" name="seal_text" id="seal_text" placeholder="例: 代表之印"
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
-                                <input type="text" name="client_name" placeholder="例: お得意様株式会社" required
+                                <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
+                                <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-lg font-bold text-slate-700">請求明細</h2>
-                            <button type="button" 
+                            <button type="button" id="add-item-button"
                                     hx-get="/add-item" 
                                     hx-target="#items-container" 
                                     hx-swap="beforeend"
@@ -101,7 +101,7 @@
                     </div>
 
                     <div class="mt-8 flex gap-4">
-                        <button type="button" onclick="if(document.getElementById('invoice-form').reportValidity()) { document.getElementById('invoice-form').submit(); }"
+                        <button type="button" id="download-pdf-button" onclick="if(document.getElementById('invoice-form').reportValidity()) { document.getElementById('invoice-form').submit(); }"
                                 class="flex-1 bg-slate-800 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-slate-700 transition-all shadow-lg flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
