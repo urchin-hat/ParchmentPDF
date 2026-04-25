@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ParchmentPDF - 請求書ジェネレーター</title>
+    <title>WashiSeikyu - 和紙請求</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -28,10 +28,10 @@
     <header class="bg-white border-b border-slate-200 py-4 shadow-sm mb-6">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <span>📜</span> ParchmentPDF <span class="text-sm font-normal text-slate-400 ml-2">v2.2 Preview Mode</span>
+                <span>📜</span> WashiSeikyu <span class="text-sm font-normal text-slate-400 ml-2">和紙請求 v2.2</span>
             </h1>
             <div class="text-xs text-slate-400">
-                SRE-grade Reliability
+                Reliability First
             </div>
         </div>
     </header>
@@ -41,7 +41,6 @@
             
             <!-- 左カラム: 入力フォーム -->
             <div class="space-y-6">
-                <!-- hx-trigger="load" を追加して初期表示時にもプレビューを飛ばす -->
                 <form id="invoice-form" action="/generate" method="POST"
                       hx-post="/preview" hx-target="#preview-area" 
                       hx-trigger="load, change delay:200ms, keyup delay:500ms from:input, keyup delay:500ms from:textarea">
@@ -126,7 +125,6 @@
                     <div class="htmx-indicator text-xs text-slate-400 animate-pulse">更新中...</div>
                 </div>
                 <div id="preview-area" class="origin-top transition-all duration-300">
-                    <!-- HTMXによってここに fragments/invoice_preview.html が挿入される -->
                     <div class="bg-white p-20 shadow-sm border border-slate-200 rounded-xl text-center text-slate-300">
                         読み込み中...
                     </div>
@@ -135,5 +133,13 @@
 
         </div>
     </main>
+
+    <footer class="mt-auto py-12 border-t border-slate-200 text-center">
+        <div class="container mx-auto px-4">
+            <p class="text-slate-400 text-sm font-medium uppercase tracking-widest">
+                WashiSeikyu - 和紙請求
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
