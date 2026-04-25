@@ -211,22 +211,31 @@ class InvoiceService:
 
         # --- 最下段: 備考 ---
         if data.notes and data.notes.strip():
-            notes_y_top = min(bank_y_bottom - 10*mm, summary_y_top - summary_h - 10*mm)
+            # 備考の開始位置を決定
+            notes_y_top = min(bank_y_bottom - 10*mm, sy - 15*mm)
             note_lines = data.notes.splitlines()
-            notes_h = 10 + (len(note_lines) * 4)
+            # 枠の高さを動的に計算 (1行あたり 4.5mm)
+            notes_h = 10 + (len(note_lines) * 4.5)
             
+            # 枠線の描画 (slate-200相当)
+            c.setLineWidth(0.3)
             c.setStrokeColor(colors.HexColor("#E2E8F0"))
+            c.setFillColor(colors.white) # 背景は白
+            # 枠の描画 (x, y, w, h)
             c.rect(20*mm, notes_y_top - notes_h, width - 40*mm, notes_h, fill=0, stroke=1)
             
+            # ラベルの描画 (slate-400相当)
             c.setFont(bold_font_name, 8)
             c.setFillColor(colors.HexColor("#94A3B8"))
-            c.drawString(25*mm, notes_y_top - 3*mm, "【備考 / 特記事項】")
+            c.drawString(25*mm, notes_y_top - 4*mm, "【備考 / 特記事項】")
+            
+            # 本文の描画
             c.setFillColor(colors.black)
             c.setFont(font_name, 8)
-            ny = notes_y_top - 8*mm
+            ny = notes_y_top - 9*mm
             for line in note_lines:
                 c.drawString(25*mm, ny, line)
-                ny -= 4*mm
+                ny -= 4.5*mm
 
         # フッター
         c.setFont(font_name, 8)
