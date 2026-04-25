@@ -7,42 +7,46 @@ import os
 class InvoiceService:
     @staticmethod
     def generate_pdf(data: InvoiceRequest) -> bytes:
-        pdf = FPDF()
+        pdf = FPDF(unit="mm", format="A4")
         
-        # 日本語フォントの登録
-        font_dir = "static/fonts"
+        # フォントパスの解決
+        font_dir = os.path.join(os.getcwd(), "static", "fonts")
         regular_font = os.path.join(font_dir, "NotoSansJP-Regular.otf")
         bold_font = os.path.join(font_dir, "NotoSansJP-Bold.otf")
         
-        if os.path.exists(regular_font):
-            pdf.add_font("NotoSansJP", "", regular_font)
-        else:
-            pdf.set_font("Helvetica", "", 12)
-            
-        if os.path.exists(bold_font):
-            pdf.add_font("NotoSansJP", "B", bold_font)
+        # フォント登録
+        pdf.add_font("NotoSansJP", "", regular_font)
+        pdf.add_font("NotoSansJP", "B", bold_font)
         
         pdf.add_page()
         
         # タイトル
         pdf.set_font("NotoSansJP", "B", 24)
         pdf.cell(0, 30, "御請求書", ln=True, align="C")
-        pdf.ln(10)
+        pdf.ln(5)
         
-        # メタデータ (番号と日付) - 右寄せ
+        # メタデータ (番号と日付)
         pdf.set_font("NotoSansJP", "", 10)
         pdf.cell(0, 5, f"請求書番号: {data.invoice_number}", align="R", ln=True)
         pdf.cell(0, 5, f"発行日: {data.issue_date}", align="R", ln=True)
-        pdf.ln(10)
+        pdf.ln(5)
         
-        # 宛先 (左寄せ)
+        # 宛先
         pdf.set_font("NotoSansJP", "B", 16)
         pdf.cell(0, 10, f"{data.client_name} 御中", ln=True)
         pdf.set_line_width(0.5)
-        pdf.line(10, pdf.get_y(), 100, pdf.get_y()) # 下線
-        pdf.ln(15)
+        pdf.set_draw_color(30, 41, 59)
+        pdf.line(10, pdf.get_y(), 100, pdf.get_y())
+        pdf.ln(10)
+
+        # 合計金額バー (横幅いっぱい)
+        pdf.set_font("NotoSansJP", "B", 14)
+        pdf.set_fill_color(248, 250, 252) # slate-50
+        pdf.set_draw_color(226, 232, 240) # slate-200
+        pdf.cell(0, 16, f"  合計金額 (税込) :  ¥{data.grand_total:,}", border=1, ln=True, fill=True)
+        pdf.ln(10)
         
-        # 発行者情報 (右寄せ)
+        # 発行者情報
         issuer_y_start = pdf.get_y()
         pdf.set_font("NotoSansJP", "B", 11)
         pdf.set_x(120)
@@ -51,7 +55,7 @@ class InvoiceService:
         pdf.set_x(120)
         pdf.cell(70, 7, data.issuer_name, ln=True, align="L")
         
-        # 印影の生成と描画
+        # 印影
         seal_text = data.seal_text or data.issuer_name[:4]
         if seal_text:
             try:
@@ -62,49 +66,47 @@ class InvoiceService:
         
         pdf.set_y(issuer_y_start + 25)
         
-        # 合計金額の強調表示
-        pdf.set_font("NotoSansJP", "B", 14)
-        pdf.set_fill_color(245, 245, 245)
-        pdf.cell(0, 15, f"  合計金額:  ¥{data.grand_total:,} (税込)", border="TB", ln=True, fill=True)
-        pdf.ln(10)
-        
-        # 表ヘッダー (190mm を分割: 90, 15, 15, 35, 35)
-        pdf.set_fill_color(230, 230, 230)
+        # 表ヘッダー
+        pdf.set_draw_color(30, 41, 59)
+        pdf.set_fill_color(248, 250, 252)
         pdf.set_font("NotoSansJP", "B", 9)
-        pdf.cell(90, 10, "内容 / 品目", border=1, fill=True, align="C")
-        pdf.cell(15, 10, "数量", border=1, fill=True, align="C")
-        pdf.cell(15, 10, "税率", border=1, fill=True, align="C")
-        pdf.cell(35, 10, "単価", border=1, fill=True, align="C")
-        pdf.cell(35, 10, "金額 (税抜)", border=1, fill=True, align="C", ln=True)
+        pdf.cell(90, 10, "内容 / 品目", border="TB", fill=True, align="C")
+        pdf.cell(15, 10, "数量", border="TB", fill=True, align="C")
+        pdf.cell(15, 10, "税率", border="TB", fill=True, align="C")
+        pdf.cell(35, 10, "単価", border="TB", fill=True, align="C")
+        pdf.cell(35, 10, "金額 (税抜)", border="TB", fill=True, align="C", ln=True)
         
         # 表データ
+        pdf.set_draw_color(226, 232, 240)
         pdf.set_font("NotoSansJP", "", 9)
         for item in data.items:
-            pdf.cell(90, 10, f" {item.description}", border=1)
-            pdf.cell(15, 10, str(item.quantity), border=1, align="C")
-            pdf.cell(15, 10, f"{item.tax_rate}%", border=1, align="C")
-            pdf.cell(35, 10, f"¥{item.unit_price:,} ", border=1, align="R")
-            pdf.cell(35, 10, f"¥{item.total_exclusive:,} ", border=1, align="R", ln=True)
+            pdf.cell(90, 10, f" {item.description}", border="B")
+            pdf.cell(15, 10, str(item.quantity), border="B", align="C")
+            pdf.cell(15, 10, f"{item.tax_rate}%", border="B", align="C")
+            pdf.cell(35, 10, f"¥{item.unit_price:,} ", border="B", align="R")
+            pdf.cell(35, 10, f"¥{item.total_exclusive:,} ", border="B", align="R", ln=True)
             
-        pdf.ln(5)
+        pdf.ln(8)
         
-        # 集計セクション (右寄せ)
-        pdf.set_x(130)
-        pdf.set_font("NotoSansJP", "", 10)
-        pdf.cell(35, 8, "小計 (税抜):", border="B", align="R")
-        pdf.cell(35, 8, f"¥{data.subtotal:,} ", border="B", align="R", ln=True)
+        # 集計セクション
+        summary_x, summary_w = 125, 75
+        pdf.set_x(summary_x)
+        pdf.set_fill_color(248, 250, 252)
+        pdf.set_font("NotoSansJP", "", 9)
+        pdf.cell(summary_w/2, 8, "小計 (税抜) ", align="R", fill=True)
+        pdf.cell(summary_w/2, 8, f"¥{data.subtotal:,} ", align="R", fill=True, ln=True)
         
         for rate, amount in data.tax_breakdown.items():
-            pdf.set_x(130)
-            pdf.cell(35, 8, f"消費税 ({rate}):", border="B", align="R")
-            pdf.cell(35, 8, f"¥{amount:,} ", border="B", align="R", ln=True)
+            pdf.set_x(summary_x)
+            pdf.cell(summary_w/2, 8, f"消費税 ({rate}) ", align="R", fill=True)
+            pdf.cell(summary_w/2, 8, f"¥{amount:,} ", align="R", fill=True, ln=True)
             
-        pdf.set_x(130)
+        pdf.set_x(summary_x)
+        pdf.set_draw_color(30, 41, 59)
         pdf.set_font("NotoSansJP", "B", 11)
-        pdf.cell(35, 10, "税込合計金額:", border="B", align="R")
-        pdf.cell(35, 10, f"¥{data.grand_total:,} ", border="B", align="R", ln=True)
+        pdf.cell(summary_w/2, 10, "税込合計金額 ", border="T", align="R", fill=True)
+        pdf.cell(summary_w/2, 10, f"¥{data.grand_total:,} ", border="T", align="R", fill=True, ln=True)
         
-        # フッター
         pdf.set_y(-30)
         pdf.set_font("NotoSansJP", "", 8)
         pdf.set_text_color(150, 150, 150)

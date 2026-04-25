@@ -6,6 +6,7 @@ from app.models.invoice import InvoiceRequest, InvoiceItem
 from app.services.invoice_service import InvoiceService
 from datetime import date
 from typing import List, Optional
+from urllib.parse import quote
 import io
 
 app = FastAPI(title="Nami-Seikyu - 波請求")
@@ -111,8 +112,11 @@ async def generate_invoice(
     
     pdf_bytes = InvoiceService.generate_pdf(invoice_data)
     
+    # 日本語ファイル名に対応 (RFC 5987)
+    utf8_filename = f"請求書_{invoice_number}.pdf"
+    encoded_filename = quote(utf8_filename)
     headers = {
-        'Content-Disposition': f'attachment; filename="invoice_{invoice_number}.pdf"'
+        'Content-Disposition': f'attachment; filename="{encoded_filename}"; filename*=UTF-8\'\'{encoded_filename}'
     }
     return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
 

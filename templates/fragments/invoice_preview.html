@@ -1,37 +1,38 @@
 <div class="bg-white p-10 shadow-xl border border-slate-200 mx-auto max-w-[210mm] min-h-[297mm] text-slate-800 font-sans relative overflow-hidden rounded-xl" id="invoice-preview-container">
-    <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold tracking-widest text-slate-900">御請求書</h1>
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-widest text-slate-900 uppercase">御請求書</h1>
         <div class="h-1 w-20 bg-slate-800 mx-auto mt-2"></div>
     </div>
 
-    <div class="flex justify-between mb-10">
-        <div class="space-y-4">
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
-                <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 min-w-[200px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
-            </div>
-            <div class="bg-slate-50 p-4 border border-slate-100 rounded-lg">
-                <span class="text-lg font-bold">合計金額 (税込)</span>
-                <span class="text-2xl font-black block mt-1">¥{{ invoice.grand_total | font_format_currency }}</span>
+    <div class="flex justify-end mb-6">
+        <div class="text-right space-y-1">
+            <p class="text-xs text-slate-400 font-mono">請求書番号: <span class="text-slate-700">{{ invoice.invoice_number }}</span></p>
+            <p class="text-xs text-slate-400 font-mono">発行日: <span class="text-slate-700">{{ invoice.issue_date }}</span></p>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
+        <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 inline-block min-w-[250px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
+    </div>
+
+    <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-10 flex justify-between items-center">
+        <span class="text-lg font-bold text-slate-700">合計金額 (税込)</span>
+        <span class="text-2xl font-black text-slate-900">¥{{ invoice.grand_total | font_format_currency }}</span>
+    </div>
+
+    <div class="flex justify-end mb-10 relative">
+        <div class="text-right">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 text-left">発行者</p>
+            <p class="text-lg font-bold text-slate-800">{{ invoice.issuer_name or '　　　　　' }}</p>
+        </div>
+        {% if invoice.seal_text %}
+        <div class="absolute -right-2 -top-4 opacity-90 pointer-events-none" id="preview-seal">
+            <div class="w-14 h-14 border-2 border-red-500 rounded-sm flex items-center justify-center text-red-500 font-bold text-[10px] p-1 transform rotate-12 leading-tight ring-1 ring-red-500 ring-offset-1">
+                {{ invoice.seal_text }}
             </div>
         </div>
-        <div class="text-right flex flex-col justify-between">
-            <div class="space-y-1">
-                <p class="text-xs text-slate-400">請求書番号: <span class="text-slate-700 font-mono">{{ invoice.invoice_number }}</span></p>
-                <p class="text-xs text-slate-400">発行日: <span class="text-slate-700 font-mono">{{ invoice.issue_date }}</span></p>
-            </div>
-            <div class="mt-4 relative">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">発行者</p>
-                <p class="text-lg font-bold text-slate-800">{{ invoice.issuer_name or '　　　　　' }}</p>
-                {% if invoice.seal_text %}
-                <div class="absolute -right-2 -top-4 opacity-90 pointer-events-none" id="preview-seal">
-                    <div class="w-14 h-14 border-2 border-red-500 rounded-sm flex items-center justify-center text-red-500 font-bold text-[10px] p-1 transform rotate-12 leading-tight ring-1 ring-red-500 ring-offset-1">
-                        {{ invoice.seal_text }}
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+        {% endif %}
     </div>
 
     <table class="w-full mb-8 border-collapse">
@@ -84,4 +85,3 @@
         NAMI-SEIKYU INVOICE SYSTEM
     </div>
 </div>
-
