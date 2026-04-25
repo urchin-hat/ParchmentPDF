@@ -26,8 +26,16 @@ class InvoiceItem(BaseModel):
 class InvoiceRequest(BaseModel):
     invoice_number: str = Field(..., description="請求書番号")
     issue_date: date = Field(default_factory=date.today, description="発行日")
+    payment_deadline: Optional[date] = Field(None, description="支払期限")
     client_name: str = Field(..., description="請求先名")
+    client_postal_code: Optional[str] = Field(None, description="請求先郵便番号")
+    client_address: Optional[str] = Field(None, description="請求先住所")
+    client_contact_person: Optional[str] = Field(None, description="請求先担当者名")
     issuer_name: str = Field(..., description="発行者名")
+    issuer_postal_code: Optional[str] = Field(None, description="発行者郵便番号")
+    issuer_address: Optional[str] = Field(None, description="発行者住所・連絡先")
+    bank_info: Optional[str] = Field(None, description="振込先情報")
+    notes: Optional[str] = Field(None, description="備考")
     seal_text: Optional[str] = Field(None, description="印影のテキスト（例：代表之印）")
     items: List[InvoiceItem] = Field(..., min_items=1, description="品目リスト")
 

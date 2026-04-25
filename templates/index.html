@@ -61,21 +61,89 @@
                             </div>
                         </div>
 
-                        <div class="space-y-4 pt-2">
+                        <div>
+                            <label for="payment_deadline" class="block text-xs font-semibold text-slate-500 uppercase mb-1">支払期限 (任意)</label>
+                            <input type="date" name="payment_deadline" id="payment_deadline"
+                                   class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                        </div>
+
+                        <div class="space-y-4 pt-2 border-t border-slate-100">
+                            <h2 class="text-sm font-bold text-slate-500 pb-1">宛先情報 (To)</h2>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="col-span-1">
+                                    <label for="client_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" name="client_postal_code" id="client_postal_code" placeholder="1234567"
+                                               class="p-postal-code w-full px-2 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono text-sm">
+                                        <button type="button" onclick="lookupAddress('client', this)"
+                                                class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded text-[10px] font-bold transition-colors whitespace-nowrap">
+                                            住所検索
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-span-3">
+                                    <label for="client_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 住所</label>
+                                    <input type="text" name="client_address" id="client_address" placeholder="例: 東京都千代田区宛先町2-2-2"
+                                           class="p-region p-locality p-street-address p-extended-address w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 会社/組織名</label>
+                                    <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                </div>
+                                <div>
+                                    <label for="client_contact_person" class="block text-xs font-semibold text-slate-500 uppercase mb-1">担当者名 (任意)</label>
+                                    <input type="text" name="client_contact_person" id="client_contact_person" placeholder="例: 田中 太郎 様"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-2 border-t border-slate-100">
+                            <h2 class="text-sm font-bold text-slate-500 pb-1">発行者情報 (From)</h2>
                             <div>
-                                <label for="issuer_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名 (From)</label>
+                                <label for="issuer_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名</label>
                                 <input type="text" name="issuer_name" id="issuer_name" placeholder="例: 波請求株式会社" required
-                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-bold">
+                            </div>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="col-span-1">
+                                    <label for="issuer_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" name="issuer_postal_code" id="issuer_postal_code" placeholder="1000001"
+                                               class="p-postal-code w-full px-2 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono text-sm">
+                                        <button type="button" onclick="lookupAddress('issuer', this)"
+                                                class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded text-[10px] font-bold transition-colors whitespace-nowrap">
+                                            住所検索
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-span-3">
+                                    <label for="issuer_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者 住所</label>
+                                    <input type="text" name="issuer_address" id="issuer_address" placeholder="例: 東京都千代田区1-1-1"
+                                           class="p-region p-locality p-street-address p-extended-address w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                </div>
                             </div>
                             <div>
                                 <label for="seal_text" class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>
                                 <input type="text" name="seal_text" id="seal_text" placeholder="例: 代表之印"
                                        class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
                             </div>
+                        </div>
+
+                        <div class="space-y-4 pt-2">
+                            <h2 class="text-sm font-bold text-slate-500 border-b border-slate-100 pb-1">振込先・備考</h2>
                             <div>
-                                <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名 (To)</label>
-                                <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
-                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                <label for="bank_info" class="block text-xs font-semibold text-slate-500 uppercase mb-1">振込先口座情報</label>
+                                <textarea name="bank_info" id="bank_info" placeholder="例: 波々銀行 大波支店 普通 1234567&#13;&#10;口座名義: ナミセイキュウ（カ"
+                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono text-sm" rows="2"></textarea>
+                            </div>
+                            <div>
+                                <label for="notes" class="block text-xs font-semibold text-slate-500 uppercase mb-1">備考 / 特記事項</label>
+                                <textarea name="notes" id="notes" placeholder="例: 振込手数料は貴社にてご負担願います。"
+                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
@@ -141,5 +209,48 @@
             </p>
         </div>
     </footer>
+    <script>
+        async function lookupAddress(type, button) {
+            const postalInput = document.getElementById(type + '_postal_code');
+            const addressInput = document.getElementById(type + '_address');
+            
+            // 入力値をトリミングして最新の状態を取得
+            const rawValue = postalInput.value || '';
+            const postalCode = rawValue.replace(/[^\d]/g, '');
+            
+            if (postalCode.length !== 7) {
+                alert('郵便番号を7桁で入力してください。現在の入力: ' + rawValue);
+                return;
+            }
+
+            console.log(`Searching address for: ${postalCode} (${type})`);
+
+            const originalText = button.innerText;
+            button.innerText = '検索中...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`);
+                const data = await response.json();
+
+                if (data.status === 200 && data.results && data.results.length > 0) {
+                    const result = data.results[0];
+                    const fullAddress = result.address1 + result.address2 + result.address3;
+                    addressInput.value = fullAddress;
+                    
+                    // HTMX に変更を通知してプレビューを更新
+                    addressInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    addressInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                    alert('該当する郵便番号が見つかりませんでした。事業所固有番号などの場合は、お手数ですが手動で入力してください。');
+                }
+            } catch (error) {
+                alert('住所の取得に失敗しました。ネットワーク状況を確認してください。');
+            } finally {
+                button.innerText = originalText;
+                button.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>

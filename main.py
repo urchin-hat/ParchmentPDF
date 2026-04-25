@@ -28,25 +28,41 @@ templates.env.filters["font_format_currency"] = format_currency
 def parse_invoice_form(
     invoice_number: str,
     issue_date: date,
+    payment_deadline: Optional[date],
     client_name: str,
+    client_postal_code: Optional[str],
+    client_address: Optional[str],
+    client_contact_person: Optional[str],
     issuer_name: str,
+    issuer_postal_code: Optional[str],
+    issuer_address: Optional[str],
+    bank_info: Optional[str],
+    notes: Optional[str],
     seal_text: Optional[str],
     item_desc: List[str],
     item_qty: List[int],
     item_price: List[str],
-    item_tax: List[int] # 追加
+    item_tax: List[int]
 ) -> InvoiceRequest:
     items = []
     for desc, qty, price_str, tax in zip(item_desc, item_qty, item_price, item_tax):
         if desc.strip():
             clean_price = int(price_str.replace(",", "")) if price_str else 0
             items.append(InvoiceItem(description=desc, quantity=qty, unit_price=clean_price, tax_rate=tax))
-    
+
     return InvoiceRequest(
         invoice_number=invoice_number,
         issue_date=issue_date,
+        payment_deadline=payment_deadline,
         client_name=client_name,
+        client_postal_code=client_postal_code,
+        client_address=client_address,
+        client_contact_person=client_contact_person,
         issuer_name=issuer_name,
+        issuer_postal_code=issuer_postal_code,
+        issuer_address=issuer_address,
+        bank_info=bank_info,
+        notes=notes,
         seal_text=seal_text,
         items=items
     )
@@ -71,18 +87,29 @@ async def preview_invoice(
     request: Request,
     invoice_number: str = Form(...),
     issue_date: date = Form(...),
+    payment_deadline: date = Form(None),
     client_name: str = Form(...),
+    client_postal_code: str = Form(None),
+    client_address: str = Form(None),
+    client_contact_person: str = Form(None),
     issuer_name: str = Form(...),
+    issuer_postal_code: str = Form(None),
+    issuer_address: str = Form(None),
+    bank_info: str = Form(None),
+    notes: str = Form(None),
     seal_text: str = Form(None),
     item_desc: List[str] = Form(...),
     item_qty: List[int] = Form(...),
     item_price: List[str] = Form(...),
-    item_tax: List[int] = Form(...) # 追加
-):
+    item_tax: List[int] = Form(...)
+    ):
     invoice_data = parse_invoice_form(
-        invoice_number, issue_date, client_name, issuer_name, seal_text, 
+        invoice_number, issue_date, payment_deadline, client_name, client_postal_code,
+        client_address, client_contact_person, issuer_name, issuer_postal_code,
+        issuer_address, bank_info, notes, seal_text, 
         item_desc, item_qty, item_price, item_tax
     )
+
     
     return templates.TemplateResponse(
         request=request,
@@ -97,18 +124,29 @@ async def preview_invoice(
 async def generate_invoice(
     invoice_number: str = Form(...),
     issue_date: date = Form(...),
+    payment_deadline: date = Form(None),
     client_name: str = Form(...),
+    client_postal_code: str = Form(None),
+    client_address: str = Form(None),
+    client_contact_person: str = Form(None),
     issuer_name: str = Form(...),
+    issuer_postal_code: str = Form(None),
+    issuer_address: str = Form(None),
+    bank_info: str = Form(None),
+    notes: str = Form(None),
     seal_text: str = Form(None),
     item_desc: List[str] = Form(...),
     item_qty: List[int] = Form(...),
     item_price: List[str] = Form(...),
-    item_tax: List[int] = Form(...) # 追加
-):
+    item_tax: List[int] = Form(...)
+    ):
     invoice_data = parse_invoice_form(
-        invoice_number, issue_date, client_name, issuer_name, seal_text, 
+        invoice_number, issue_date, payment_deadline, client_name, client_postal_code,
+        client_address, client_contact_person, issuer_name, issuer_postal_code,
+        issuer_address, bank_info, notes, seal_text, 
         item_desc, item_qty, item_price, item_tax
     )
+
     
     pdf_bytes = InvoiceService.generate_pdf(invoice_data)
     
