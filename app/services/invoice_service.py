@@ -61,7 +61,8 @@ class InvoiceService:
                 c.drawString(20*mm, client_y_top, line)
                 client_y_top -= 4*mm
         
-        client_y_top -= 2*mm
+        # 住所と名前の間の余白を広げる
+        client_y_top -= 6*mm
         c.setFillColor(colors.black)
         c.setFont(bold_font_name, 16)
         c.drawString(20*mm, client_y_top, f"{data.client_name} 御中")
