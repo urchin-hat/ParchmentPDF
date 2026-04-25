@@ -69,15 +69,29 @@
 
                         <div class="space-y-4 pt-2 border-t border-slate-100">
                             <h2 class="text-sm font-bold text-slate-500 pb-1">宛先情報 (To)</h2>
-                            <div>
-                                <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先名</label>
-                                <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
-                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="col-span-1">
+                                    <label for="client_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
+                                    <input type="text" name="client_postal_code" id="client_postal_code" placeholder="123-4567"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
+                                </div>
+                                <div class="col-span-3">
+                                    <label for="client_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 住所</label>
+                                    <input type="text" name="client_address" id="client_address" placeholder="例: 東京都千代田区宛先町2-2-2"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                </div>
                             </div>
-                            <div>
-                                <label for="client_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 住所</label>
-                                <textarea name="client_address" id="client_address" placeholder="例: 〒100-0002 東京都千代田区宛先町2-2-2"
-                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm" rows="2"></textarea>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="client_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">請求先 会社/組織名</label>
+                                    <input type="text" name="client_name" id="client_name" placeholder="例: お得意様株式会社" required
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                </div>
+                                <div>
+                                    <label for="client_contact_person" class="block text-xs font-semibold text-slate-500 uppercase mb-1">担当者名 (任意)</label>
+                                    <input type="text" name="client_contact_person" id="client_contact_person" placeholder="例: 田中 太郎 様"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                </div>
                             </div>
                         </div>
 
@@ -86,12 +100,19 @@
                             <div>
                                 <label for="issuer_name" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者名</label>
                                 <input type="text" name="issuer_name" id="issuer_name" placeholder="例: 波請求株式会社" required
-                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all">
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-bold">
                             </div>
-                            <div>
-                                <label for="issuer_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者 住所・連絡先</label>
-                                <textarea name="issuer_address" id="issuer_address" placeholder="例: 〒100-0001 東京都千代田区1-1-1&#13;&#10;TEL: 03-xxxx-xxxx"
-                                          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all" rows="2"></textarea>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="col-span-1">
+                                    <label for="issuer_postal_code" class="block text-xs font-semibold text-slate-500 uppercase mb-1">郵便番号</label>
+                                    <input type="text" name="issuer_postal_code" id="issuer_postal_code" placeholder="100-0001"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all font-mono">
+                                </div>
+                                <div class="col-span-3">
+                                    <label for="issuer_address" class="block text-xs font-semibold text-slate-500 uppercase mb-1">発行者 住所</label>
+                                    <input type="text" name="issuer_address" id="issuer_address" placeholder="例: 東京都千代田区1-1-1"
+                                           class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:border-slate-800 transition-all text-sm">
+                                </div>
                             </div>
                             <div>
                                 <label for="seal_text" class="block text-xs font-semibold text-slate-500 uppercase mb-1">印影テキスト (任意)</label>

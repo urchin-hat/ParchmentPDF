@@ -36,7 +36,7 @@ class InvoiceService:
         c.setStrokeColor(colors.black)
         c.line(width/2 - 20*mm, height - 28*mm, width/2 + 20*mm, height - 28*mm)
 
-        # --- メタデータ ---
+        # --- メタデータ (右寄せ) ---
         c.setFont(font_name, 10)
         c.drawRightString(width - 20*mm, height - 40*mm, f"請求書番号: {data.invoice_number}")
         c.drawRightString(width - 20*mm, height - 45*mm, f"発行日: {data.issue_date}")
@@ -46,10 +46,13 @@ class InvoiceService:
             c.drawRightString(width - 20*mm, height - 50*mm, f"支払期限: {data.payment_deadline}")
             c.setFillColor(colors.black)
 
-        # --- 宛先 ---
+        # --- 宛先 (左寄せ) ---
         c.setFont(font_name, 9)
         c.setFillColor(colors.HexColor("#475569"))
         client_y = height - 55*mm
+        if data.client_postal_code:
+            c.drawString(20*mm, client_y, f"〒{data.client_postal_code}")
+            client_y -= 4.5*mm
         if data.client_address:
             for line in data.client_address.splitlines():
                 c.drawString(20*mm, client_y, line)
@@ -60,30 +63,39 @@ class InvoiceService:
         c.drawString(20*mm, client_y - 2*mm, f"{data.client_name} 御中")
         c.setLineWidth(0.5)
         c.line(20*mm, client_y - 4*mm, 100*mm, client_y - 4*mm)
+        
+        if data.client_contact_person:
+            c.setFont(font_name, 11)
+            c.setFillColor(colors.HexColor("#334155"))
+            c.drawString(25*mm, client_y - 9*mm, data.client_contact_person)
+            client_y -= 7*mm
 
         # --- 合計金額バー ---
         c.setFillColor(colors.HexColor("#F8FAFC"))
         c.setStrokeColor(colors.HexColor("#E2E8F0"))
-        c.rect(20*mm, height - 83*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
+        c.rect(20*mm, height - 88*mm, width - 40*mm, 16*mm, fill=1, stroke=1)
         c.setFillColor(colors.black)
         c.setFont(bold_font_name, 14)
-        c.drawString(28*mm, height - 75*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
+        c.drawString(28*mm, height - 80*mm, f"合計金額 (税込) :  ¥{data.grand_total:,}")
         
-        # --- 発行者情報 ---
-        issuer_y = height - 100*mm
+        # --- 発行者情報 (右寄せ) ---
+        issuer_y = height - 105*mm
         c.setFont(bold_font_name, 11)
         c.drawRightString(width - 30*mm, issuer_y, "発行者:")
         c.setFont(bold_font_name, 12)
         c.drawRightString(width - 30*mm, issuer_y - 7*mm, data.issuer_name)
         
+        c.setFont(font_name, 9)
+        c.setFillColor(colors.HexColor("#475569"))
+        addr_y = issuer_y - 12*mm
+        if data.issuer_postal_code:
+            c.drawRightString(width - 30*mm, addr_y, f"〒{data.issuer_postal_code}")
+            addr_y -= 4.5*mm
         if data.issuer_address:
-            c.setFont(font_name, 9)
-            c.setFillColor(colors.HexColor("#475569"))
-            addr_y = issuer_y - 12*mm
             for line in data.issuer_address.splitlines():
                 c.drawRightString(width - 30*mm, addr_y, line)
                 addr_y -= 4*mm
-            c.setFillColor(colors.black)
+        c.setFillColor(colors.black)
 
         # 印影
         seal_text = data.seal_text or data.issuer_name[:4]
@@ -97,7 +109,7 @@ class InvoiceService:
                 print(f"Error generating seal: {e}")
 
         # --- 表ヘッダー ---
-        table_top = height - 135*mm
+        table_top = height - 140*mm
         c.setFillColor(colors.HexColor("#F8FAFC"))
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.8)
@@ -144,7 +156,8 @@ class InvoiceService:
 
         # 右側: 金額集計カード
         summary_w = 70
-        summary_h = 24 + (len(data.tax_breakdown) * 5)
+        tax_rows = len(data.tax_breakdown)
+        summary_h = 24 + (tax_rows * 5)
         summary_y_top = mid_section_y + 4*mm
         
         c.setFillColor(colors.HexColor("#F8FAFC"))
@@ -161,7 +174,7 @@ class InvoiceService:
         c.drawRightString(width - 55*mm, curr_y, "消費税 合計")
         c.drawRightString(width - 25*mm, curr_y, f"¥{data.total_tax:,}")
         
-        # 税率別内訳 (インボイス要件)
+        # 税率別内訳
         c.setFont(font_name, 7)
         c.setFillColor(colors.HexColor("#64748B"))
         for rate, amount in data.tax_breakdown.items():
@@ -197,7 +210,7 @@ class InvoiceService:
         # --- フッター ---
         c.setFont(font_name, 8)
         c.setFillColor(colors.gray)
-        c.drawCentredString(width/2, 12*mm, "本請求書は Nami-Seikyu により自動生成されました。")
+        c.drawCentredString(width/2, 10*mm, "本請求書は Nami-Seikyu により自動生成されました。")
 
         c.showPage()
         c.save()

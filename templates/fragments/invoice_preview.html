@@ -15,11 +15,22 @@
     </div>
 
     <div class="mb-8">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">振込先（宛名）</p>
-        {% if invoice.client_address %}
-        <p class="text-xs text-slate-500 mb-1 whitespace-pre-wrap">{{ invoice.client_address }}</p>
-        {% endif %}
-        <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 inline-block min-w-[250px]">{{ invoice.client_name or '　　　　　' }} 御中</h2>
+        <div class="space-y-0.5 mb-2">
+            {% if invoice.client_postal_code %}
+            <p class="text-xs text-slate-500 font-mono">〒{{ invoice.client_postal_code }}</p>
+            {% endif %}
+            {% if invoice.client_address %}
+            <p class="text-xs text-slate-500 whitespace-pre-wrap">{{ invoice.client_address }}</p>
+            {% endif %}
+        </div>
+        <div class="flex flex-col">
+            <h2 class="text-xl font-bold border-b-2 border-slate-800 pb-1 inline-block min-w-[250px] self-start">
+                {{ invoice.client_name or '　　　　　' }} 御中
+            </h2>
+            {% if invoice.client_contact_person %}
+            <p class="text-sm text-slate-600 mt-1 ml-4">{{ invoice.client_contact_person }}</p>
+            {% endif %}
+        </div>
     </div>
 
     <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-8 flex justify-between items-center">
@@ -31,9 +42,14 @@
         <div class="text-right max-w-[300px]">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 text-left">発行者</p>
             <p class="text-lg font-bold text-slate-800">{{ invoice.issuer_name or '　　　　　' }}</p>
-            {% if invoice.issuer_address %}
-            <p class="text-xs text-slate-500 mt-1 whitespace-pre-wrap">{{ invoice.issuer_address }}</p>
-            {% endif %}
+            <div class="text-xs text-slate-500 mt-1 space-y-0.5">
+                {% if invoice.issuer_postal_code %}
+                <p class="font-mono">〒{{ invoice.issuer_postal_code }}</p>
+                {% endif %}
+                {% if invoice.issuer_address %}
+                <p class="whitespace-pre-wrap">{{ invoice.issuer_address }}</p>
+                {% endif %}
+            </div>
         </div>
         {% if invoice.seal_text %}
         <div class="absolute -right-2 top-0 opacity-90 pointer-events-none" id="preview-seal">
@@ -93,7 +109,6 @@
                 <span class="text-slate-700 font-mono">¥{{ invoice.total_tax | font_format_currency }}</span>
             </div>
             
-            <!-- 税率別内訳 (インボイス要件) -->
             {% for rate, amount in invoice.tax_breakdown.items() %}
             <div class="flex justify-between text-[10px] text-slate-400 pt-0.5">
                 <span>（{{ rate }}対象消費税）</span>
@@ -108,7 +123,6 @@
         </div>
     </div>
 
-    <!-- 備考 (最下部) -->
     {% if invoice.notes %}
     <div class="mt-12 pt-6 border-t border-slate-100">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">備考 / 特記事項</p>
