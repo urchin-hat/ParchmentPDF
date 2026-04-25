@@ -7,16 +7,22 @@ import os
 class InvoiceService:
     @staticmethod
     def generate_pdf(data: InvoiceRequest) -> bytes:
+        # FPDF インスタンスの生成 (ユニットを mm に設定)
         pdf = FPDF(unit="mm", format="A4")
         
-        # フォントパスの解決
+        # PDF バージョンを 1.5 に設定 (互換性重視)
+        try:
+            pdf.pdf_version = "1.5"
+        except:
+            pass
+
+        # フォント登録 (fname 引数を明示)
         font_dir = os.path.join(os.getcwd(), "static", "fonts")
         regular_font = os.path.join(font_dir, "NotoSansJP-Regular.otf")
         bold_font = os.path.join(font_dir, "NotoSansJP-Bold.otf")
         
-        # フォント登録
-        pdf.add_font("NotoSansJP", "", regular_font)
-        pdf.add_font("NotoSansJP", "B", bold_font)
+        pdf.add_font("NotoSansJP", style="", fname=regular_font)
+        pdf.add_font("NotoSansJP", style="B", fname=bold_font)
         
         pdf.add_page()
         
