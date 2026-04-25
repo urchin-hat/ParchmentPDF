@@ -10,6 +10,10 @@ class InvoiceService:
         # ユニットを mm に設定
         pdf = FPDF(unit="mm", format="A4")
         
+        # メタデータの設定 (Chrome のタブ名などに反映)
+        pdf.set_title(f"請求書_{data.invoice_number}")
+        pdf.set_author(data.issuer_name)
+        
         # 日本語フォントのパスを絶対パスで解決
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         font_dir = os.path.join(base_dir, "static", "fonts")
