@@ -169,34 +169,42 @@ class InvoiceService:
         # 右側: 金額集計カード
         summary_w = 70
         tax_rows = len(data.tax_breakdown)
-        summary_h = 24 + (tax_rows * 5)
+        # 高さを項目数に応じて調整 (基本 28mm + 税率1件につき 5mm)
+        summary_h = 26 + (tax_rows * 5)
         summary_y_top = mid_y + 4*mm
         
-        c.setFillColor(colors.HexColor("#F8FAFC"))
-        c.setStrokeColor(colors.HexColor("#E2E8F0"))
-        c.rect(width - 90*mm, summary_y_top - summary_h, 70*mm, summary_h, fill=1, stroke=1)
-        c.setFillColor(colors.black)
+        # 背景と枠線の描画
+        c.setLineWidth(0.5)
+        c.setStrokeColor(colors.HexColor("#E2E8F0")) # slate-200
+        c.setFillColor(colors.HexColor("#F8FAFC")) # slate-50
+        # 枠の位置を少し調整して、テキストとのバランスを整える
+        c.rect(width - 90*mm, summary_y_top - summary_h, summary_w*mm, summary_h, fill=1, stroke=1)
         
-        sy = summary_y_top - 6*mm
+        c.setFillColor(colors.black)
+        sy = summary_y_top - 7*mm # 1行目の開始位置
+        
         c.setFont(font_name, 9)
         c.drawRightString(width - 55*mm, sy, "小計 (税抜)")
         c.drawRightString(width - 25*mm, sy, f"¥{data.subtotal:,}")
+        
         sy -= 6*mm
         c.drawRightString(width - 55*mm, sy, "消費税 合計")
         c.drawRightString(width - 25*mm, sy, f"¥{data.total_tax:,}")
         
+        # 税率別内訳 (インボイス要件)
         c.setFont(font_name, 7)
-        c.setFillColor(colors.HexColor("#64748B"))
+        c.setFillColor(colors.HexColor("#64748B")) # slate-500
         for rate, amount in data.tax_breakdown.items():
-            sy -= 4.5*mm
+            sy -= 5*mm
             c.drawRightString(width - 55*mm, sy, f"（{rate}対象消費税）")
             c.drawRightString(width - 25*mm, sy, f"¥{amount:,}")
             
-        sy -= 8*mm
+        # 税込合計 (強調ラインと太字)
+        sy -= 9*mm
         c.setFillColor(colors.black)
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.5)
-        c.line(width - 85*mm, sy + 6*mm, width - 25*mm, sy + 6*mm)
+        c.line(width - 85*mm, sy + 7*mm, width - 25*mm, sy + 7*mm)
         c.setFont(bold_font_name, 11)
         c.drawRightString(width - 55*mm, sy, "税込合計金額")
         c.drawRightString(width - 25*mm, sy, f"¥{data.grand_total:,}")
