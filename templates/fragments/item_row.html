@@ -25,7 +25,7 @@
     </div>
     <div class="col-span-1 flex justify-center pb-2">
         <button type="button" 
-                onclick="const row = this.closest('.grid'); row.remove(); document.getElementById('invoice-form').dispatchEvent(new Event('change', { bubbles: true }));" 
+                onclick="const container = document.getElementById('items-container'); if (container.querySelectorAll('.grid').length > 1) { this.closest('.grid').remove(); document.getElementById('invoice-form').dispatchEvent(new Event('change', { bubbles: true })); } else { alert('最低でも1つの品目が必要です。'); }" 
                 class="group text-slate-400 hover:text-red-500 transition-colors p-1"
                 title="この行を削除">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current" viewBox="0 0 24 24" stroke="none">
