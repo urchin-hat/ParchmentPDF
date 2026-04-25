@@ -72,50 +72,49 @@
     </table>
 
     <div class="flex justify-between items-start pt-4">
-        <!-- 振込先情報・備考 -->
-        <div class="w-1/2 space-y-4">
+        <!-- お振込先情報 -->
+        <div class="w-1/2">
             {% if invoice.bank_info %}
             <div class="p-4 border border-slate-100 bg-slate-50/50 rounded-xl">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">お振込先</p>
                 <p class="text-xs text-slate-700 font-mono whitespace-pre-wrap leading-relaxed">{{ invoice.bank_info }}</p>
             </div>
             {% endif %}
-            
-            {% if invoice.notes %}
-            <div class="p-4 border border-slate-50 bg-white rounded-xl">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">備考 / 特記事項</p>
-                <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
-            </div>
-            {% endif %}
         </div>
 
         <!-- 金額内訳 -->
-        <div class="w-64 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-            <div class="flex justify-between text-xs font-medium">
+        <div class="w-64 space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="flex justify-between text-xs">
                 <span class="text-slate-400">小計 (税抜)</span>
                 <span class="text-slate-700 font-mono">¥{{ invoice.subtotal | font_format_currency }}</span>
             </div>
-            <div class="flex justify-between text-xs font-medium">
+            <div class="flex justify-between text-xs">
                 <span class="text-slate-400">消費税 合計</span>
                 <span class="text-slate-700 font-mono">¥{{ invoice.total_tax | font_format_currency }}</span>
             </div>
             
-            <!-- 税率別内訳 -->
-            <div class="pt-1 space-y-1 border-t border-slate-200">
-                {% for rate, amount in invoice.tax_breakdown.items() %}
-                <div class="flex justify-between text-[10px] text-slate-400">
-                    <span>内訳 ({{ rate }})</span>
-                    <span>¥{{ amount | font_format_currency }}</span>
-                </div>
-                {% endfor %}
+            <!-- 税率別内訳 (インボイス要件) -->
+            {% for rate, amount in invoice.tax_breakdown.items() %}
+            <div class="flex justify-between text-[10px] text-slate-400 pt-0.5">
+                <span>（{{ rate }}対象消費税）</span>
+                <span>¥{{ amount | font_format_currency }}</span>
             </div>
+            {% endfor %}
 
-            <div class="flex justify-between text-base font-black border-t border-slate-300 pt-2 text-slate-900">
+            <div class="flex justify-between text-base font-black border-t border-slate-300 pt-2 mt-2 text-slate-900">
                 <span>税込合計金額</span>
                 <span>¥{{ invoice.grand_total | font_format_currency }}</span>
             </div>
         </div>
     </div>
+
+    <!-- 備考 (最下部) -->
+    {% if invoice.notes %}
+    <div class="mt-12 pt-6 border-t border-slate-100">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">備考 / 特記事項</p>
+        <p class="text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
 
     <div class="absolute bottom-8 left-0 right-0 text-center text-slate-300 text-[9px] font-medium tracking-widest">
         NAMI-SEIKYU INVOICE SYSTEM
