@@ -18,10 +18,10 @@ uv run uvicorn main:app --reload
 起動後、 [http://localhost:8000](http://localhost:8000) にアクセスしてください。
 
 ### 2. Docker / Podman Compose を使用した起動
-コンテナ環境を使用して、本番に近い構成で起動します。
+コンテナ環境を使用して起動します。プロジェクト内の `Containerfile` を使用してビルドされます。
 
 ```bash
-docker-compose up --build
+docker compose up --build
 # または
 podman-compose up --build
 ```
